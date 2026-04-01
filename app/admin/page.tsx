@@ -54,7 +54,7 @@ export default function AdminPage() {
   // Show password prompt if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 to-slate-800">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-2xl">
           <div className="flex flex-col items-center mb-6">
             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
