@@ -1,0 +1,144 @@
+'use client';
+
+import Image from 'next/image';
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Star, Plus, Trash2 } from 'lucide-react';
+import { EditableWrapper } from './editable-wrapper';
+import { useEditContext } from '@/app/admin/page';
+
+const initialArchitects = [
+  {
+    id: 1,
+    name: 'Alexandra Sterling',
+    title: 'Principal Architect',
+    image: '/architect-1.jpg',
+    bio: 'Award-winning architect with 15+ years of experience in luxury residential design.',
+  },
+  {
+    id: 2,
+    name: 'Elena Rossi',
+    title: 'Design Director',
+    image: '/architect-2.jpg',
+    bio: 'Creative visionary specializing in contemporary and sustainable architecture.',
+  },
+  {
+    id: 3,
+    name: 'Marcus Chen',
+    title: 'Lead Architect',
+    image: '/architect-3.jpg',
+    bio: 'Expert in innovative structural design and urban planning initiatives.',
+  },
+];
+
+export function AdminArchitectsSection() {
+  const [architects, setArchitects] = useState(initialArchitects);
+  const { setSelectedItem, isEditMode } = useEditContext();
+
+  return (
+    <section id="architects" className="py-20 px-6 bg-secondary/30">
+      <div className="mx-auto max-w-7xl">
+        <EditableWrapper
+          onEdit={() =>
+            setSelectedItem({
+              type: 'sectionHeader',
+              section: 'architects',
+              title: 'Meet Our Architects',
+              description: 'Visionary professionals dedicated to creating spaces that inspire and endure.',
+            })
+          }
+        >
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">Meet Our Architects</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Visionary professionals dedicated to creating spaces that inspire and endure.
+            </p>
+          </div>
+        </EditableWrapper>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {isEditMode && (
+            <Card
+              onClick={() => setSelectedItem({
+                type: 'newArchitect',
+                name: '',
+                title: '',
+                image: '',
+                bio: '',
+                onSave: (newArchitect: any) => {
+                  setArchitects([...architects, { ...newArchitect, id: Date.now() }]);
+                }
+              })}
+              className="overflow-hidden border-2 border-dashed border-blue-400 hover:border-blue-600 cursor-pointer hover:bg-blue-50/10 transition-all duration-300 flex items-center justify-center min-h-[400px] group"
+            >
+              <div className="text-center p-6">
+                <div className="w-16 h-16 rounded-full bg-blue-500 text-white flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                  <Plus className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Add Architect</h3>
+                <p className="text-sm text-muted-foreground">Click to add new team member</p>
+              </div>
+            </Card>
+          )}
+
+          {architects.map((architect, index) => (
+            <div key={architect.id} className="relative group">
+              <EditableWrapper
+                onEdit={() => setSelectedItem({ 
+                  ...architect, 
+                  type: 'architect', 
+                  index,
+                  onSave: (updatedArchitect: any) => {
+                    const newArchitects = [...architects];
+                    newArchitects[index] = { ...updatedArchitect, id: architect.id };
+                    setArchitects(newArchitects);
+                  },
+                  onDelete: () => {
+                    if (confirm('Delete this architect?')) {
+                      setArchitects(architects.filter((a) => a.id !== architect.id));
+                    }
+                  }
+                })}
+              >
+                <Card className="overflow-hidden hover:shadow-lg transition-all">
+                  <div className="relative h-72 bg-muted">
+                    <Image
+                      src={architect.image}
+                      alt={architect.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex gap-1 mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                      ))}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-1">{architect.name}</h3>
+                    <p className="text-primary text-sm font-medium mb-3">{architect.title}</p>
+                    <p className="text-muted-foreground text-sm">{architect.bio}</p>
+                  </div>
+                </Card>
+              </EditableWrapper>
+
+              {isEditMode && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm('Delete this architect?')) {
+                      setArchitects(architects.filter((a) => a.id !== architect.id));
+                    }
+                  }}
+                  className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
