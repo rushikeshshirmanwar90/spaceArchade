@@ -3,6 +3,39 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Custom Fonts */
+@font-face {
+  font-family: 'Milara';
+  src: url('/fonts/Milara.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Apollo';
+  src: url('/fonts/Apollo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Driftune';
+  src: url('/fonts/Driftune.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Moonrising';
+  src: url('/fonts/Moonrising.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: oklch(0.98 0.002 240);
   --foreground: oklch(0.2 0.015 240);
@@ -125,4 +158,21 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom Font Utility Classes */
+.font-milara {
+  font-family: 'Milara', sans-serif;
+}
+
+.font-apollo {
+  font-family: 'Apollo', sans-serif;
+}
+
+.font-driftune {
+  font-family: 'Driftune', sans-serif;
+}
+
+.font-moonrising {
+  font-family: 'Moonrising', sans-serif;
 }

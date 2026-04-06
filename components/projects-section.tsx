@@ -69,8 +69,8 @@ export function ProjectsSection() {
     <section id="projects" className="py-20 px-6">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Design Showcases</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold mb-4 font-apollo">Design Showcases</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-apollo">
             Discover our portfolio of award-winning projects spanning residential, commercial, and hospitality sectors.
           </p>
         </div>
@@ -113,13 +113,13 @@ export function ProjectsSection() {
               </div>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full font-apollo">
                     {project.category}
                   </span>
-                  <span className="text-xs text-muted-foreground">{project.location}</span>
+                  <span className="text-xs text-muted-foreground font-apollo">{project.location}</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                <p className="text-muted-foreground text-sm">{project.description}</p>
+                <h3 className="text-xl font-semibold mb-2 font-apollo">{project.title}</h3>
+                <p className="text-muted-foreground text-sm font-apollo">{project.description}</p>
               </div>
             </Card>
           ))}

@@ -5,8 +5,8 @@ export function ProcessSection() {
     <section id="process" className="py-20 px-6 bg-muted/20">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Our Design Process</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold mb-4 font-driftune">Our Design Process</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-driftune">
             A systematic approach to creating exceptional architectural solutions tailored to your vision.
           </p>
         </div>
@@ -24,12 +24,12 @@ export function ProcessSection() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
                   1
                 </div>
-                <h3 className="text-xl font-semibold">Concept & Planning</h3>
+                <h3 className="text-xl font-semibold font-driftune">Concept & Planning</h3>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-driftune">
                 We begin with in-depth consultations to understand your vision, goals, and unique requirements for your project.
               </p>
             </div>
@@ -47,12 +47,12 @@ export function ProcessSection() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
                   2
                 </div>
-                <h3 className="text-xl font-semibold">Design & Development</h3>
+                <h3 className="text-xl font-semibold font-driftune">Design & Development</h3>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-driftune">
                 Our team creates detailed renderings and 3D models, iterating with your feedback until perfection is achieved.
               </p>
             </div>
@@ -70,12 +70,12 @@ export function ProcessSection() {
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
                   3
                 </div>
-                <h3 className="text-xl font-semibold">Execution & Delivery</h3>
+                <h3 className="text-xl font-semibold font-driftune">Execution & Delivery</h3>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-driftune">
                 We oversee every detail of construction, ensuring quality standards and timely completion of your project.
               </p>
             </div>
