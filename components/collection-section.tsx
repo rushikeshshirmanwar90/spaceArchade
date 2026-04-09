@@ -1,27 +1,39 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 
-const collectionImages = [
-  { id: 1, src: '/project-1.jpg', alt: 'Collection Image 1' },
-  { id: 2, src: '/project-2.jpg', alt: 'Collection Image 2' },
-  { id: 3, src: '/project-3.jpg', alt: 'Collection Image 3' },
-  { id: 4, src: '/project-4.jpg', alt: 'Collection Image 4' },
-  { id: 5, src: '/project-5.jpg', alt: 'Collection Image 5' },
-  { id: 6, src: '/project-6.jpg', alt: 'Collection Image 6' },
-  { id: 7, src: '/process-1.jpg', alt: 'Collection Image 7' },
-  { id: 8, src: '/process-2.jpg', alt: 'Collection Image 8' },
-  { id: 9, src: '/process-3.jpg', alt: 'Collection Image 9' },
-  { id: 10, src: '/hero.jpg', alt: 'Collection Image 10' },
-  { id: 11, src: '/architect-1.jpg', alt: 'Collection Image 11' },
-  { id: 12, src: '/architect-2.jpg', alt: 'Collection Image 12' },
-];
+interface CollectionImage {
+  _id: string;
+  src: string;
+  alt: string;
+  order: number;
+}
 
 export function CollectionSection() {
+  const [collectionImages, setCollectionImages] = useState<CollectionImage[]>([]);
   const [showAll, setShowAll] = useState(false);
+  const [loading, setLoading] = useState(true);
   const initialCount = 6;
+
+  // Fetch collection images from API
+  useEffect(() => {
+    async function fetchImages() {
+      try {
+        const response = await fetch('/api/collection-images');
+        const result = await response.json();
+        if (result.success) {
+          setCollectionImages(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching collection images:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchImages();
+  }, []);
   
   const displayedImages = showAll ? collectionImages : collectionImages.slice(0, initialCount);
 
@@ -35,47 +47,60 @@ export function CollectionSection() {
           </p>
         </div>
 
-        {/* Image Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {displayedImages.map((image) => (
-            <div
-              key={image.id}
-              className="relative aspect-square overflow-hidden rounded-lg group cursor-pointer"
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-300"
-              />
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          </div>
+        ) : collectionImages.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No collection images found</p>
+          </div>
+        ) : (
+          <>
+            {/* Image Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {displayedImages.map((image) => (
+                <div
+                  key={image._id}
+                  className="relative aspect-square overflow-hidden rounded-lg group cursor-pointer"
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Show More Button */}
-        {!showAll && collectionImages.length > initialCount && (
-          <div className="text-center mt-12">
-            <Button
-              size="lg"
-              onClick={() => setShowAll(true)}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              Show More
-            </Button>
-          </div>
-        )}
+            {/* Show More Button */}
+            {!showAll && collectionImages.length > initialCount && (
+              <div className="text-center mt-12">
+                <Button
+                  size="lg"
+                  onClick={() => setShowAll(true)}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  Show More
+                </Button>
+              </div>
+            )}
 
-        {/* Show Less Button */}
-        {showAll && (
-          <div className="text-center mt-12">
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => setShowAll(false)}
-            >
-              Show Less
-            </Button>
-          </div>
+            {/* Show Less Button */}
+            {showAll && (
+              <div className="text-center mt-12">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setShowAll(false)}
+                >
+                  Show Less
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

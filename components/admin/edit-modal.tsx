@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { X, Upload, Trash2, Plus, Image as ImageIcon } from 'lucide-react';
-import { handleImageUpload } from '@/lib/image-upload';
+import { X, Upload, Trash2, Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { handleSingleImageUpload } from '@/lib/image-upload';
 import Image from 'next/image';
 
 interface EditModalProps {
@@ -18,23 +18,32 @@ interface EditModalProps {
 export function EditModal({ item, onClose, onSave }: EditModalProps) {
   const [editedItem, setEditedItem] = useState(item);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, key: string = 'image') => {
-    const urls = await handleImageUpload(
-      e,
-      (newImages) => {
-        setEditedItem({ ...editedItem, [key]: newImages[0] });
-      },
-      setIsLoading
-    );
+    try {
+      await handleSingleImageUpload(
+        e,
+        (url) => {
+          setEditedItem({ ...editedItem, [key]: url });
+        },
+        setIsLoading
+      );
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
   };
 
-  const handleSave = () => {
-    if (item.onSave) {
-      item.onSave(editedItem);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Call the onSave prop which handles API save
+      await onSave(editedItem);
+      // Modal will be closed by parent after successful save
+    } catch (error) {
+      console.error('Save error:', error);
+      setIsSaving(false);
     }
-    onSave(editedItem);
-    onClose();
   };
 
   const handleDelete = () => {
@@ -753,11 +762,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-primary">
-              Add Slide
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Add Slide'
+              )}
             </Button>
           </div>
         </div>
@@ -807,11 +823,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-primary">
-              Add Architect
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Add Architect'
+              )}
             </Button>
           </div>
         </div>
@@ -868,11 +891,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-primary">
-              Add Testimonial
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Add Testimonial'
+              )}
             </Button>
           </div>
         </div>
@@ -1120,11 +1150,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-primary">
-              Add Project
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Add Project'
+              )}
             </Button>
           </div>
         </div>
@@ -1182,11 +1219,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
               Delete
             </Button>
           )}
-          <Button variant="outline" onClick={onClose} className="flex-1">
+          <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="flex-1 bg-primary">
-            Save Changes
+          <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Changes'
+            )}
           </Button>
         </div>
       </div>

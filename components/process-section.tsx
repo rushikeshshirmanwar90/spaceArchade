@@ -1,6 +1,48 @@
+'use client';
+
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+
+interface ProcessStep {
+  _id: string;
+  step: number;
+  title: string;
+  description: string;
+  image: string;
+}
 
 export function ProcessSection() {
+  const [processSteps, setProcessSteps] = useState<ProcessStep[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch process steps from API
+  useEffect(() => {
+    async function fetchProcessSteps() {
+      try {
+        const response = await fetch('/api/process-steps');
+        const result = await response.json();
+        if (result.success) {
+          setProcessSteps(result.data.sort((a: ProcessStep, b: ProcessStep) => a.step - b.step));
+        }
+      } catch (error) {
+        console.error('Error fetching process steps:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProcessSteps();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="process" className="py-20 px-6 bg-muted/20">
+        <div className="mx-auto max-w-7xl text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="process" className="py-20 px-6 bg-muted/20">
       <div className="mx-auto max-w-7xl">
@@ -12,74 +54,29 @@ export function ProcessSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Process Step 1 */}
-          <div className="flex flex-col">
-            <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
-              <Image
-                src="/process-1.jpg"
-                alt="Concept & Planning"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
-                  1
-                </div>
-                <h3 className="text-xl font-semibold font-driftune">Concept & Planning</h3>
+          {processSteps.map((step) => (
+            <div key={step._id} className="flex flex-col">
+              <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
+                <Image
+                  src={step.image}
+                  alt={step.title}
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <p className="text-muted-foreground font-driftune">
-                We begin with in-depth consultations to understand your vision, goals, and unique requirements for your project.
-              </p>
-            </div>
-          </div>
-
-          {/* Process Step 2 */}
-          <div className="flex flex-col">
-            <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
-              <Image
-                src="/process-2.jpg"
-                alt="Design & Development"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
-                  2
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
+                    {step.step}
+                  </div>
+                  <h3 className="text-xl font-semibold font-driftune">{step.title}</h3>
                 </div>
-                <h3 className="text-xl font-semibold font-driftune">Design & Development</h3>
+                <p className="text-muted-foreground font-driftune">
+                  {step.description}
+                </p>
               </div>
-              <p className="text-muted-foreground font-driftune">
-                Our team creates detailed renderings and 3D models, iterating with your feedback until perfection is achieved.
-              </p>
             </div>
-          </div>
-
-          {/* Process Step 3 */}
-          <div className="flex flex-col">
-            <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
-              <Image
-                src="/process-3.jpg"
-                alt="Execution & Delivery"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
-                  3
-                </div>
-                <h3 className="text-xl font-semibold font-driftune">Execution & Delivery</h3>
-              </div>
-              <p className="text-muted-foreground font-driftune">
-                We oversee every detail of construction, ensuring quality standards and timely completion of your project.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

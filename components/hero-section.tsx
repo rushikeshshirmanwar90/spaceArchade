@@ -5,47 +5,48 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const slides = [
-  {
-    id: 1,
-    image: '/hero.jpg',
-    title: 'Contemporary Architectural Excellence',
-    description: 'Transforming spaces into extraordinary experiences through innovative design',
-  },
-  {
-    id: 2,
-    image: '/project-1.jpg',
-    title: 'Luxury Residential Design',
-    description: 'Creating dream homes with seamless indoor-outdoor living spaces',
-  },
-  {
-    id: 3,
-    image: '/project-2.jpg',
-    title: 'Commercial Architecture',
-    description: 'State-of-the-art buildings with sustainable design principles',
-  },
-  {
-    id: 4,
-    image: '/project-4.jpg',
-    title: 'Urban Development',
-    description: 'Integrated spaces transforming neighborhoods and communities',
-  },
-];
+interface Slide {
+  _id: string;
+  image: string;
+  title: string;
+  description: string;
+  order: number;
+}
 
 export function HeroSection() {
+  const [slides, setSlides] = useState<Slide[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch slides from API
+  useEffect(() => {
+    async function fetchSlides() {
+      try {
+        const response = await fetch('/api/hero-slides');
+        const result = await response.json();
+        if (result.success) {
+          setSlides(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching slides:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSlides();
+  }, []);
 
   // Auto-play functionality
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || slides.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, slides.length]);
 
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
@@ -62,12 +63,22 @@ export function HeroSection() {
     setIsAutoPlaying(false);
   };
 
+  if (loading || slides.length === 0) {
+    return (
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-muted">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Slides */}
       {slides.map((slide, index) => (
         <div
-          key={slide.id}
+          key={slide._id}
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
@@ -85,10 +96,10 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-20 text-center text-white px-4 max-w-2xl">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance animate-fade-in font-milara">
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance animate-fade-in" style={{ fontFamily: 'var(--font-milara)' }}>
           {slides[currentSlide].title}
         </h1>
-        <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance animate-fade-in font-milara">
+        <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance animate-fade-in" style={{ fontFamily: 'var(--font-milara)' }}>
           {slides[currentSlide].description}
         </p>
         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in">

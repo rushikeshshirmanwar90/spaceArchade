@@ -108,8 +108,12 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
+  --font-sans: 'Driftune', 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-milara: 'Milara', sans-serif;
+  --font-apollo: 'Apollo', sans-serif;
+  --font-driftune: 'Driftune', sans-serif;
+  --font-moonrising: 'Moonrising', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -157,22 +161,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-driftune);
   }
 }
 
-/* Custom Font Utility Classes */
-.font-milara {
-  font-family: 'Milara', sans-serif;
-}
-
-.font-apollo {
-  font-family: 'Apollo', sans-serif;
-}
-
-.font-driftune {
-  font-family: 'Driftune', sans-serif;
-}
-
-.font-moonrising {
-  font-family: 'Moonrising', sans-serif;
+/* Background Pattern for Admin Login */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 40px 40px;
 }

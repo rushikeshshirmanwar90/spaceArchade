@@ -9,9 +9,7 @@ import { ArchitectsSection } from '@/components/architects-section';
 import { StatsSection } from '@/components/stats-section';
 import { ProcessSection } from '@/components/process-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
-import { AwardsSection } from '@/components/awards-section';
 import { ContactForm } from '@/components/contact-form';
-import { CTASection } from '@/components/cta-section';
 import { Footer } from '@/components/footer';
 import { WhatsAppWidget } from '@/components/whatsapp-widget';
 

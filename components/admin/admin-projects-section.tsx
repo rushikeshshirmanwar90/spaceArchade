@@ -8,73 +8,33 @@ import { EditableWrapper } from './editable-wrapper';
 import { useEditContext } from '@/app/admin/page';
 import { Plus, Trash2, Edit2, Upload } from 'lucide-react';
 
-const initialProjects = [
-  {
-    id: 1,
-    title: 'Minimalist Residence',
-    location: 'California Coast',
-    category: 'Residential',
-    image: '/project-1.jpg',
-    description: 'Contemporary luxury home with seamless indoor-outdoor living spaces',
-  },
-  {
-    id: 2,
-    title: 'Corporate Tower',
-    location: 'Downtown Metro',
-    category: 'Commercial',
-    image: '/project-2.jpg',
-    description: 'State-of-the-art office building with sustainable design principles',
-  },
-  {
-    id: 3,
-    title: 'Heritage Villa',
-    location: 'Countryside Estate',
-    category: 'Residential',
-    image: '/project-3.jpg',
-    description: 'Elegant property blending modern comfort with timeless architecture',
-  },
-  {
-    id: 4,
-    title: 'Mixed-Use Development',
-    location: 'Urban District',
-    category: 'Commercial',
-    image: '/project-4.jpg',
-    description: 'Integrated retail and residential complex transforming the neighborhood',
-  },
-  {
-    id: 5,
-    title: 'Luxury Penthouse',
-    location: 'Skyline Heights',
-    category: 'Residential',
-    image: '/project-5.jpg',
-    description: 'High-rise residence with panoramic views and premium finishes',
-  },
-  {
-    id: 6,
-    title: 'Boutique Hotel',
-    location: 'Coastal Resort',
-    category: 'Hospitality',
-    image: '/project-6.jpg',
-    description: 'Sustainable hospitality design with exceptional guest experiences',
-  },
-];
-
 export function AdminProjectsSection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [projects, setProjects] = useState(initialProjects);
-  const { setSelectedItem, isEditMode } = useEditContext();
+  const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
+  const projects = data.projects;
 
   const filteredProjects = selectedCategory
-    ? projects.filter((p) => p.category === selectedCategory)
+    ? projects.filter((p: any) => p.category === selectedCategory)
     : projects;
 
-  const categories = Array.from(new Set(projects.map((p) => p.category)));
+  const categories = Array.from(new Set(projects.map((p: any) => p.category)));
 
-  const handleDeleteCategory = (category: string) => {
-    if (confirm(`Delete category "${category}" and all its projects?`)) {
-      setProjects(projects.filter((p) => p.category !== category));
-      if (selectedCategory === category) {
-        setSelectedCategory(null);
+  const handleDeleteProject = async (projectId: string) => {
+    if (confirm('Delete this project?')) {
+      try {
+        const response = await fetch(`/api/projects/${projectId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Project deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting project: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        alert('Error deleting project. Please try again.');
       }
     }
   };
@@ -87,9 +47,6 @@ export function AdminProjectsSection() {
       location: '',
       image: '',
       description: '',
-      onSave: (newProject: any) => {
-        setProjects([...projects, { ...newProject, id: Date.now() }]);
-      },
     });
   };
 
@@ -144,12 +101,23 @@ export function AdminProjectsSection() {
                         type: 'editCategory',
                         oldName: cat,
                         newName: cat,
-                        onSave: (updatedCategory: string) => {
-                          setProjects(
-                            projects.map((p) =>
-                              p.category === cat ? { ...p, category: updatedCategory } : p
-                            )
-                          );
+                        onSave: async (updatedCategory: string) => {
+                          // Update all projects with this category
+                          const projectsToUpdate = projects.filter((p: any) => p.category === cat);
+                          
+                          for (const project of projectsToUpdate) {
+                            await fetch(`/api/projects/${project._id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                ...project,
+                                category: updatedCategory,
+                              }),
+                            });
+                          }
+                          
+                          await refreshData();
+                          alert('Category updated successfully!');
                         },
                       });
                     }}
@@ -158,9 +126,24 @@ export function AdminProjectsSection() {
                     <Edit2 className="h-3 w-3" />
                   </button>
                   <button
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
-                      handleDeleteCategory(cat);
+                      if (confirm(`Delete category "${cat}" and all its projects?`)) {
+                        // Delete all projects in this category
+                        const projectsToDelete = projects.filter((p: any) => p.category === cat);
+                        
+                        for (const project of projectsToDelete) {
+                          await fetch(`/api/projects/${project._id}`, {
+                            method: 'DELETE',
+                          });
+                        }
+                        
+                        await refreshData();
+                        if (selectedCategory === cat) {
+                          setSelectedCategory(null);
+                        }
+                        alert('Category and all its projects deleted!');
+                      }
                     }}
                     className="bg-red-500 text-white rounded p-1 hover:bg-red-600 transition-colors"
                   >
@@ -172,31 +155,53 @@ export function AdminProjectsSection() {
           ))}
 
           {isEditMode && (
-            <Button
-              variant="outline"
-              onClick={() =>
-                setSelectedItem({
-                  type: 'newCategory',
-                  name: '',
-                  onSave: (categoryName: string) => {
-                    const newProject = {
-                      id: Date.now(),
-                      title: 'New Project',
-                      location: 'Location',
-                      category: categoryName,
-                      image: '/placeholder.jpg',
-                      description: 'Description',
-                    };
-                    setProjects([...projects, newProject]);
-                    setSelectedCategory(categoryName);
-                  },
-                })
-              }
-              className="border-dashed border-2 border-blue-400 hover:border-blue-600 hover:bg-blue-50/10"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Category
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setSelectedItem({
+                    type: 'newCategory',
+                    name: '',
+                    onSave: async (categoryName: string) => {
+                      // Create a new project with this category
+                      const response = await fetch('/api/projects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          title: `New ${categoryName} Project`,
+                          location: 'Location',
+                          category: categoryName,
+                          image: '/placeholder.jpg',
+                          description: 'Add description here',
+                        }),
+                      });
+                      
+                      const result = await response.json();
+                      if (result.success) {
+                        await refreshData();
+                        setSelectedCategory(categoryName);
+                        alert(`Category "${categoryName}" created successfully!`);
+                      } else {
+                        alert('Error creating category: ' + (result.error || 'Unknown error'));
+                      }
+                    },
+                  })
+                }
+                className="border-dashed border-2 border-green-400 hover:border-green-600 hover:bg-green-50/10"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Category
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => handleAddProject(selectedCategory)}
+                className="border-dashed border-2 border-blue-400 hover:border-blue-600 hover:bg-blue-50/10"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Project
+              </Button>
+            </>
           )}
         </div>
 
@@ -224,24 +229,13 @@ export function AdminProjectsSection() {
             </Card>
           )}
 
-          {filteredProjects.map((project) => (
-            <div key={project.id} className="relative group">
+          {filteredProjects.map((project: any) => (
+            <div key={project._id} className="relative group">
               <EditableWrapper
                 onEdit={() =>
                   setSelectedItem({
                     ...project,
                     type: 'project',
-                    onSave: (updatedProject: any) => {
-                      const newProjects = [...projects];
-                      const projectIndex = projects.findIndex((p) => p.id === project.id);
-                      newProjects[projectIndex] = updatedProject;
-                      setProjects(newProjects);
-                    },
-                    onDelete: () => {
-                      if (confirm('Delete this project?')) {
-                        setProjects(projects.filter((p) => p.id !== project.id));
-                      }
-                    },
                   })
                 }
               >
@@ -271,9 +265,7 @@ export function AdminProjectsSection() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this project?')) {
-                      setProjects(projects.filter((p) => p.id !== project.id));
-                    }
+                    handleDeleteProject(project._id);
                   }}
                   className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                 >
