@@ -96,10 +96,10 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-20 text-center text-white px-4 max-w-2xl">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance animate-fade-in" style={{ fontFamily: 'var(--font-milara)' }}>
+        <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance animate-fade-in">
           {slides[currentSlide].title}
         </h1>
-        <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance animate-fade-in" style={{ fontFamily: 'var(--font-milara)' }}>
+        <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance animate-fade-in">
           {slides[currentSlide].description}
         </p>
         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 animate-fade-in">

@@ -47,8 +47,8 @@ export function ProcessSection() {
     <section id="process" className="py-20 px-6 bg-muted/20">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 font-driftune">Our Design Process</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-driftune">
+          <h2 className="text-4xl font-bold mb-4">Our Design Process</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             A systematic approach to creating exceptional architectural solutions tailored to your vision.
           </p>
         </div>
@@ -66,12 +66,12 @@ export function ProcessSection() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold font-driftune">
+                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
                     {step.step}
                   </div>
-                  <h3 className="text-xl font-semibold font-driftune">{step.title}</h3>
+                  <h3 className="text-xl font-semibold">{step.title}</h3>
                 </div>
-                <p className="text-muted-foreground font-driftune">
+                <p className="text-muted-foreground">
                   {step.description}
                 </p>
               </div>

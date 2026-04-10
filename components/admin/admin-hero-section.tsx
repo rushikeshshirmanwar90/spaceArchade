@@ -95,10 +95,10 @@ export function AdminHeroSection() {
             })
           }
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance" style={{ fontFamily: 'var(--font-milara)' }}>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-balance">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance" style={{ fontFamily: 'var(--font-milara)' }}>
+          <p className="text-xl md:text-2xl mb-8 text-white/90 text-balance">
             {slides[currentSlide].description}
           </p>
         </EditableWrapper>

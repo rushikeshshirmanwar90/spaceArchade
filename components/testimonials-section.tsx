@@ -47,8 +47,8 @@ export function TestimonialsSection() {
     <section id="testimonials" className="py-20 px-6">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4" style={{ fontFamily: 'var(--font-moonrising)' }}>Client Testimonials</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={{ fontFamily: 'var(--font-moonrising)' }}>
+          <h2 className="text-4xl font-bold mb-4">Client Testimonials</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Hear from our satisfied clients about their transformative architectural experiences.
           </p>
         </div>
@@ -61,12 +61,12 @@ export function TestimonialsSection() {
                   <Star key={i} className="h-4 w-4 fill-primary text-primary" />
                 ))}
               </div>
-              <p className="text-muted-foreground mb-6 leading-relaxed" style={{ fontFamily: 'var(--font-moonrising)' }}>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 &quot;{testimonial.message}&quot;
               </p>
               <div className="border-t border-border pt-4">
-                <p className="font-semibold" style={{ fontFamily: 'var(--font-moonrising)' }}>{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground" style={{ fontFamily: 'var(--font-moonrising)' }}>
+                <p className="font-semibold">{testimonial.name}</p>
+                <p className="text-sm text-muted-foreground">
                   {testimonial.position}, {testimonial.company}
                 </p>
               </div>
