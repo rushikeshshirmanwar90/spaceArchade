@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import connect from '@/lib/db';
 import CollectionImage from '@/models/CollectionImage';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await connect();
+    const params = await context.params;
     const body = await request.json();
     const image = await CollectionImage.findByIdAndUpdate(params.id, body, { new: true });
     
@@ -18,9 +19,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await connect();
+    const params = await context.params;
     const image = await CollectionImage.findByIdAndDelete(params.id);
     
     if (!image) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Send } from 'lucide-react';
 
 // WhatsApp Icon SVG Component
@@ -20,7 +20,23 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export function WhatsAppWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const whatsappNumber = '919579896842';
+  const [whatsappNumber, setWhatsappNumber] = useState('919579896842');
+
+  // Fetch phone number from contact settings
+  useEffect(() => {
+    async function fetchNumber() {
+      try {
+        const res = await fetch('/api/settings?key=contact');
+        const json = await res.json();
+        if (json.success && json.data && json.data.value && json.data.value.whatsappNumber) {
+          setWhatsappNumber(json.data.value.whatsappNumber);
+        }
+      } catch (err) {
+        console.error('Error fetching WhatsApp number:', err);
+      }
+    }
+    fetchNumber();
+  }, []);
 
   const handleSend = () => {
     if (!message.trim()) return;

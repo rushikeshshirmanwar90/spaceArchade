@@ -31,8 +31,28 @@ const initialProcessSteps = [
 ];
 
 export function AdminProcessSection() {
-  const [processSteps, setProcessSteps] = useState(initialProcessSteps);
-  const { setSelectedItem, isEditMode } = useEditContext();
+  const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
+  const processSteps = data.processSteps || [];
+
+  const handleDeleteProcessStep = async (stepId: string) => {
+    if (confirm('Delete this process step?')) {
+      try {
+        const response = await fetch(`/api/process-steps/${stepId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Process step deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting process step: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting process step:', error);
+        alert('Error deleting process step. Please try again.');
+      }
+    }
+  };
 
   return (
     <section id="process" className="py-20 px-6 bg-muted/20">
@@ -64,9 +84,6 @@ export function AdminProcessSection() {
                 title: '',
                 description: '',
                 image: '',
-                onSave: (newStep: any) => {
-                  setProcessSteps([...processSteps, { ...newStep, id: Date.now() }]);
-                }
               })}
               className="border-2 border-dashed border-blue-400 hover:border-blue-600 cursor-pointer hover:bg-blue-50/10 transition-all duration-300 flex items-center justify-center min-h-[400px] group rounded-lg"
             >
@@ -80,30 +97,26 @@ export function AdminProcessSection() {
             </div>
           )}
 
-          {processSteps.map((processStep, index) => (
-            <div key={processStep.id} className="relative group">
+          {processSteps.map((processStep: any, index: number) => (
+            <div key={processStep._id || processStep.id || index} className="relative group">
               <EditableWrapper
                 onEdit={() =>
                   setSelectedItem({
                     ...processStep,
                     type: 'processStep',
                     index,
-                    onSave: (updatedStep: any) => {
-                      const newSteps = [...processSteps];
-                      newSteps[index] = { ...updatedStep, id: processStep.id };
-                      setProcessSteps(newSteps);
-                    },
-                    onDelete: () => {
-                      if (confirm('Delete this process step?')) {
-                        setProcessSteps(processSteps.filter((s) => s.id !== processStep.id));
-                      }
-                    }
+                    onDelete: () => handleDeleteProcessStep(processStep._id)
                   })
                 }
               >
                 <div className="flex flex-col">
-                  <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
-                    <Image src={processStep.image} alt={processStep.title} fill className="object-cover" />
+                  <div className="relative h-64 mb-6 rounded-lg overflow-hidden bg-muted">
+                    <Image
+                      src={processStep.image || '/placeholder.jpg'}
+                      alt={processStep.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
@@ -123,9 +136,7 @@ export function AdminProcessSection() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this process step?')) {
-                      setProcessSteps(processSteps.filter((s) => s.id !== processStep.id));
-                    }
+                    handleDeleteProcessStep(processStep._id);
                   }}
                   className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                 >

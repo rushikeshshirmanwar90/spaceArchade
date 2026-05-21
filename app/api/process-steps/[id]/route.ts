@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import connect from '@/lib/db';
 import ProcessStep from '@/models/ProcessStep';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await connect();
+    const params = await context.params;
     const body = await request.json();
     const step = await ProcessStep.findByIdAndUpdate(params.id, body, { new: true });
     
@@ -18,9 +19,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     await connect();
+    const params = await context.params;
     const step = await ProcessStep.findByIdAndDelete(params.id);
     
     if (!step) {

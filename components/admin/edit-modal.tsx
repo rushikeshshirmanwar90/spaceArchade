@@ -130,6 +130,276 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
     );
   };
 
+  // Handle About Us editing
+  if (item.type === 'about') {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center p-4">
+        <div className="bg-background rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-background border-b border-border p-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Edit About Section</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            {renderImageUpload('image')}
+            <div>
+              <Label>Badge Text</Label>
+              <Input
+                value={editedItem.badge}
+                onChange={(e) => setEditedItem({ ...editedItem, badge: e.target.value })}
+                placeholder="e.g., Our Philosophy"
+              />
+            </div>
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={editedItem.title}
+                onChange={(e) => setEditedItem({ ...editedItem, title: e.target.value })}
+                placeholder="Section title"
+              />
+            </div>
+            <div>
+              <Label>Paragraph 1</Label>
+              <Textarea
+                value={editedItem.paragraph1}
+                onChange={(e) => setEditedItem({ ...editedItem, paragraph1: e.target.value })}
+                rows={3}
+                placeholder="First paragraph"
+              />
+            </div>
+            <div>
+              <Label>Paragraph 2</Label>
+              <Textarea
+                value={editedItem.paragraph2}
+                onChange={(e) => setEditedItem({ ...editedItem, paragraph2: e.target.value })}
+                rows={3}
+                placeholder="Second paragraph"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Est. Year</Label>
+                <Input
+                  value={editedItem.estYear}
+                  onChange={(e) => setEditedItem({ ...editedItem, estYear: e.target.value })}
+                  placeholder="e.g., Est. 2012"
+                />
+              </div>
+              <div>
+                <Label>Est. Label</Label>
+                <Input
+                  value={editedItem.estLabel}
+                  onChange={(e) => setEditedItem({ ...editedItem, estLabel: e.target.value })}
+                  placeholder="e.g., Crafting Legacies"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle CTA editing
+  if (item.type === 'cta') {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center p-4">
+        <div className="bg-background rounded-lg shadow-2xl max-w-md w-full">
+          <div className="bg-background border-b border-border p-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Edit CTA Section</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={editedItem.title}
+                onChange={(e) => setEditedItem({ ...editedItem, title: e.target.value })}
+                placeholder="CTA heading"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={editedItem.description}
+                onChange={(e) => setEditedItem({ ...editedItem, description: e.target.value })}
+                rows={3}
+                placeholder="CTA description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Primary Button Label</Label>
+                <Input
+                  value={editedItem.primaryLabel}
+                  onChange={(e) => setEditedItem({ ...editedItem, primaryLabel: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Primary Button Link</Label>
+                <Input
+                  value={editedItem.primaryHref}
+                  onChange={(e) => setEditedItem({ ...editedItem, primaryHref: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Secondary Button Label</Label>
+                <Input
+                  value={editedItem.secondaryLabel}
+                  onChange={(e) => setEditedItem({ ...editedItem, secondaryLabel: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Secondary Button Link</Label>
+                <Input
+                  value={editedItem.secondaryHref}
+                  onChange={(e) => setEditedItem({ ...editedItem, secondaryHref: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-background border-t border-border p-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle WhatsApp number editing
+  if (item.type === 'whatsapp') {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center p-4">
+        <div className="bg-background rounded-lg shadow-2xl max-w-md w-full">
+          <div className="bg-background border-b border-border p-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Edit WhatsApp Number</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <Label>WhatsApp Number (with country code, no +)</Label>
+              <Input
+                value={editedItem.whatsappNumber}
+                onChange={(e) => setEditedItem({ ...editedItem, whatsappNumber: e.target.value })}
+                placeholder="e.g., 919579896842"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Include country code without + sign. Example: 919579896842
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-background border-t border-border p-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Update Number'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle section header editing (contact header, etc.)
+  if (item.type === 'sectionHeader') {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center p-4">
+        <div className="bg-background rounded-lg shadow-2xl max-w-md w-full">
+          <div className="bg-background border-b border-border p-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Edit Section Header</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={editedItem.title}
+                onChange={(e) => setEditedItem({ ...editedItem, title: e.target.value })}
+                placeholder="Section title"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={editedItem.description}
+                onChange={(e) => setEditedItem({ ...editedItem, description: e.target.value })}
+                rows={3}
+                placeholder="Section description"
+              />
+            </div>
+          </div>
+
+          <div className="bg-background border-t border-border p-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Handle edit category (all category edit types)
   if (item.type === 'editCategory' || item.type === 'category') {
     return (
@@ -1183,7 +1453,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
         <div className="p-6 space-y-6">
           {/* Dynamic form based on item type */}
           {Object.keys(editedItem).map((key) => {
-            if (key === 'id' || key === 'type' || key === 'index' || key === 'onSave' || key === 'onDelete') return null;
+            if (
+              key === 'id' ||
+              key === 'type' ||
+              key === 'index' ||
+              key === 'onSave' ||
+              key === 'onDelete' ||
+              key === '_id' ||
+              key === '__v' ||
+              key === 'createdAt' ||
+              key === 'updatedAt'
+            )
+              return null;
 
             return (
               <div key={key}>

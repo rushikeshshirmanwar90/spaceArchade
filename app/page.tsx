@@ -3,12 +3,13 @@
 import { useEffect } from 'react';
 import { Navigation } from '@/components/navigation';
 import { HeroSection } from '@/components/hero-section';
+import { AboutSection } from '@/components/about-section';
 import { ProjectsSection } from '@/components/projects-section';
-import { CollectionSection } from '@/components/collection-section';
 import { ArchitectsSection } from '@/components/architects-section';
 import { StatsSection } from '@/components/stats-section';
 import { ProcessSection } from '@/components/process-section';
 import { TestimonialsSection } from '@/components/testimonials-section';
+import { CTASection } from '@/components/cta-section';
 import { ContactForm } from '@/components/contact-form';
 import { Footer } from '@/components/footer';
 import { WhatsAppWidget } from '@/components/whatsapp-widget';
@@ -46,8 +47,8 @@ export default function Home() {
     <div className="w-full bg-background text-foreground">
       <Navigation />
       <HeroSection />
+      <AboutSection />
       <ProjectsSection />
-      <CollectionSection />
       <ArchitectsSection />
       <StatsSection />
       <ProcessSection />

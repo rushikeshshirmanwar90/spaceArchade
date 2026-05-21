@@ -31,8 +31,28 @@ const initialTestimonials = [
 ];
 
 export function AdminTestimonialsSection() {
-  const [testimonials, setTestimonials] = useState(initialTestimonials);
-  const { setSelectedItem, isEditMode } = useEditContext();
+  const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
+  const testimonials = data.testimonials || [];
+
+  const handleDeleteTestimonial = async (testimonialId: string) => {
+    if (confirm('Delete this testimonial?')) {
+      try {
+        const response = await fetch(`/api/testimonials/${testimonialId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Testimonial deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting testimonial: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting testimonial:', error);
+        alert('Error deleting testimonial. Please try again.');
+      }
+    }
+  };
 
   return (
     <section id="testimonials" className="py-20 px-6">
@@ -64,9 +84,6 @@ export function AdminTestimonialsSection() {
                 position: '',
                 company: '',
                 message: '',
-                onSave: (newTestimonial: any) => {
-                  setTestimonials([...testimonials, { ...newTestimonial, id: Date.now() }]);
-                }
               })}
               className="p-8 border-2 border-dashed border-blue-400 hover:border-blue-600 cursor-pointer hover:bg-blue-50/10 transition-all duration-300 flex items-center justify-center min-h-[300px] group"
             >
@@ -80,23 +97,14 @@ export function AdminTestimonialsSection() {
             </Card>
           )}
 
-          {testimonials.map((testimonial, index) => (
-            <div key={testimonial.id} className="relative group">
+          {testimonials.map((testimonial: any, index: number) => (
+            <div key={testimonial._id || testimonial.id || index} className="relative group">
               <EditableWrapper
                 onEdit={() => setSelectedItem({ 
                   ...testimonial, 
                   type: 'testimonial', 
                   index,
-                  onSave: (updatedTestimonial: any) => {
-                    const newTestimonials = [...testimonials];
-                    newTestimonials[index] = { ...updatedTestimonial, id: testimonial.id };
-                    setTestimonials(newTestimonials);
-                  },
-                  onDelete: () => {
-                    if (confirm('Delete this testimonial?')) {
-                      setTestimonials(testimonials.filter((t) => t.id !== testimonial.id));
-                    }
-                  }
+                  onDelete: () => handleDeleteTestimonial(testimonial._id)
                 })}
               >
                 <Card className="p-8 hover:shadow-lg transition-all">
@@ -121,9 +129,7 @@ export function AdminTestimonialsSection() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this testimonial?')) {
-                      setTestimonials(testimonials.filter((t) => t.id !== testimonial.id));
-                    }
+                    handleDeleteTestimonial(testimonial._id);
                   }}
                   className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                 >

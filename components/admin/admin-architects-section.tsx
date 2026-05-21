@@ -32,8 +32,28 @@ const initialArchitects = [
 ];
 
 export function AdminArchitectsSection() {
-  const [architects, setArchitects] = useState(initialArchitects);
-  const { setSelectedItem, isEditMode } = useEditContext();
+  const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
+  const architects = data.architects || [];
+
+  const handleDeleteArchitect = async (architectId: string) => {
+    if (confirm('Delete this architect?')) {
+      try {
+        const response = await fetch(`/api/architects/${architectId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Architect deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting architect: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting architect:', error);
+        alert('Error deleting architect. Please try again.');
+      }
+    }
+  };
 
   return (
     <section id="architects" className="py-20 px-6 bg-secondary/30">
@@ -65,9 +85,6 @@ export function AdminArchitectsSection() {
                 title: '',
                 image: '',
                 bio: '',
-                onSave: (newArchitect: any) => {
-                  setArchitects([...architects, { ...newArchitect, id: Date.now() }]);
-                }
               })}
               className="overflow-hidden border-2 border-dashed border-blue-400 hover:border-blue-600 cursor-pointer hover:bg-blue-50/10 transition-all duration-300 flex items-center justify-center min-h-[400px] group"
             >
@@ -81,29 +98,20 @@ export function AdminArchitectsSection() {
             </Card>
           )}
 
-          {architects.map((architect, index) => (
-            <div key={architect.id} className="relative group">
+          {architects.map((architect: any, index: number) => (
+            <div key={architect._id || architect.id || index} className="relative group">
               <EditableWrapper
                 onEdit={() => setSelectedItem({ 
                   ...architect, 
                   type: 'architect', 
                   index,
-                  onSave: (updatedArchitect: any) => {
-                    const newArchitects = [...architects];
-                    newArchitects[index] = { ...updatedArchitect, id: architect.id };
-                    setArchitects(newArchitects);
-                  },
-                  onDelete: () => {
-                    if (confirm('Delete this architect?')) {
-                      setArchitects(architects.filter((a) => a.id !== architect.id));
-                    }
-                  }
+                  onDelete: () => handleDeleteArchitect(architect._id)
                 })}
               >
                 <Card className="overflow-hidden hover:shadow-lg transition-all">
                   <div className="relative h-72 bg-muted">
                     <Image
-                      src={architect.image}
+                      src={architect.image || '/placeholder.jpg'}
                       alt={architect.name}
                       fill
                       className="object-cover"
@@ -126,9 +134,7 @@ export function AdminArchitectsSection() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this architect?')) {
-                      setArchitects(architects.filter((a) => a.id !== architect.id));
-                    }
+                    handleDeleteArchitect(architect._id);
                   }}
                   className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                 >

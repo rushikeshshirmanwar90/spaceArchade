@@ -24,9 +24,29 @@ const initialImages = [
 
 export function AdminCollectionSection() {
   const [showAll, setShowAll] = useState(false);
-  const [images, setImages] = useState(initialImages);
-  const { setSelectedItem, isEditMode } = useEditContext();
+  const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
+  const images = data.collectionImages || [];
   const initialCount = 6;
+
+  const handleDeleteImage = async (imageId: string) => {
+    if (confirm('Delete this image?')) {
+      try {
+        const response = await fetch(`/api/collection-images/${imageId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Image deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting image: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting image:', error);
+        alert('Error deleting image. Please try again.');
+      }
+    }
+  };
   
   const displayedImages = showAll ? images : images.slice(0, initialCount);
 
@@ -58,9 +78,6 @@ export function AdminCollectionSection() {
                 type: 'newCollectionImage',
                 src: '',
                 alt: '',
-                onSave: (newImage: any) => {
-                  setImages([...images, { ...newImage, id: Date.now() }]);
-                }
               })}
               className="relative aspect-square border-2 border-dashed border-blue-400 hover:border-blue-600 cursor-pointer hover:bg-blue-50/10 transition-all duration-300 flex items-center justify-center group rounded-lg"
             >
@@ -73,30 +90,20 @@ export function AdminCollectionSection() {
             </div>
           )}
 
-          {displayedImages.map((image, index) => (
-            <div key={image.id} className="relative group">
+          {displayedImages.map((image: any, index: number) => (
+            <div key={image._id || image.id || index} className="relative group">
               <EditableWrapper
                 onEdit={() => setSelectedItem({ 
                   ...image, 
                   type: 'collectionImage', 
                   index,
-                  onSave: (updatedImage: any) => {
-                    const newImages = [...images];
-                    const actualIndex = images.findIndex(img => img.id === image.id);
-                    newImages[actualIndex] = { ...updatedImage, id: image.id };
-                    setImages(newImages);
-                  },
-                  onDelete: () => {
-                    if (confirm('Delete this image?')) {
-                      setImages(images.filter((img) => img.id !== image.id));
-                    }
-                  }
+                  onDelete: () => handleDeleteImage(image._id)
                 })}
               >
                 <div className="relative aspect-square overflow-hidden rounded-lg">
                   <Image
-                    src={image.src}
-                    alt={image.alt}
+                    src={image.src || '/placeholder.jpg'}
+                    alt={image.alt || 'Collection Image'}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -107,9 +114,7 @@ export function AdminCollectionSection() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this image?')) {
-                      setImages(images.filter((img) => img.id !== image.id));
-                    }
+                    handleDeleteImage(image._id);
                   }}
                   className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                 >

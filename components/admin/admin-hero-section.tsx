@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { EditableWrapper } from './editable-wrapper';
 import { useEditContext } from '@/app/admin/page';
 
@@ -11,6 +11,26 @@ export function AdminHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
   const slides = data.heroSlides;
+
+  const handleDeleteSlide = async (slideId: string) => {
+    if (confirm('Delete this hero slide?')) {
+      try {
+        const response = await fetch(`/api/hero-slides/${slideId}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Hero slide deleted successfully!');
+          await refreshData();
+        } else {
+          alert('Error deleting hero slide: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting hero slide:', error);
+        alert('Error deleting hero slide. Please try again.');
+      }
+    }
+  };
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -55,6 +75,7 @@ export function AdminHeroSection() {
             ...slide, 
             type: 'heroSlide', 
             index,
+            onDelete: () => handleDeleteSlide(slide._id)
           })}
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
@@ -73,18 +94,27 @@ export function AdminHeroSection() {
 
       <div className="relative z-20 text-center text-white px-4 max-w-2xl">
         {isEditMode && (
-          <button
-            onClick={() => setSelectedItem({
-              type: 'newHeroSlide',
-              image: '',
-              title: '',
-              description: '',
-            })}
-            className="absolute -top-20 right-0 bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
-          >
-            <Plus className="h-4 w-4" />
-            Add Slide
-          </button>
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 flex items-center gap-3 whitespace-nowrap">
+            <button
+              onClick={() => setSelectedItem({
+                type: 'newHeroSlide',
+                image: '',
+                title: '',
+                description: '',
+              })}
+              className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
+            >
+              <Plus className="h-4 w-4" />
+              Add Slide
+            </button>
+            <button
+              onClick={() => handleDeleteSlide(slides[currentSlide]._id)}
+              className="bg-red-500 text-white rounded-lg px-4 py-2 hover:bg-red-600 transition-colors flex items-center gap-2 text-sm font-medium shadow-lg"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Slide
+            </button>
+          </div>
         )}
         
         <EditableWrapper
@@ -92,6 +122,7 @@ export function AdminHeroSection() {
             setSelectedItem({
               ...slides[currentSlide],
               type: 'heroSlide',
+              onDelete: () => handleDeleteSlide(slides[currentSlide]._id)
             })
           }
         >
