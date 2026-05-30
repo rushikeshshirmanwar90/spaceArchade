@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Star } from 'lucide-react';
+import { Star, User } from 'lucide-react';
 
 interface Architect {
   _id: string;
@@ -57,13 +57,22 @@ export function ArchitectsSection() {
           ) : (
             architects.map((architect) => (
               <Card key={architect._id} className="overflow-hidden hover:shadow-lg transition-all">
-                <div className="relative h-72 bg-muted">
-                  <Image
-                    src={architect.image}
-                    alt={architect.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-96 bg-muted">
+                  {architect.image ? (
+                    <Image
+                      src={architect.image}
+                      alt={architect.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-secondary/40">
+                      <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="w-12 h-12 text-primary/50" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">No photo</p>
+                    </div>
+                  )}
                 </div>
                 <div className="p-6">
                   <div className="flex gap-1 mb-3">

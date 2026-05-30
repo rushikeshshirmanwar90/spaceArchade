@@ -140,6 +140,30 @@ async function saveSetting(key: string, value: any) {
 }
 
 // ─── Admin Page ───────────────────────────────────────────────────────────────
+const AUTH_KEY = 'admin_auth_expiry';
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+function getStoredAuth(): boolean {
+  try {
+    const expiry = localStorage.getItem(AUTH_KEY);
+    if (expiry && Date.now() < Number(expiry)) return true;
+    localStorage.removeItem(AUTH_KEY);
+  } catch {}
+  return false;
+}
+
+function storeAuth() {
+  try {
+    localStorage.setItem(AUTH_KEY, String(Date.now() + ONE_WEEK_MS));
+  } catch {}
+}
+
+function clearAuth() {
+  try {
+    localStorage.removeItem(AUTH_KEY);
+  } catch {}
+}
+
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
@@ -148,6 +172,11 @@ export default function AdminPage() {
   const [isEditMode, setIsEditMode] = useState(true);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Restore session from localStorage on mount
+  useEffect(() => {
+    if (getStoredAuth()) setIsAuthenticated(true);
+  }, []);
   const [data, setData] = useState<EditContextType['data']>({
     heroSlides: [],
     projects: [],
@@ -230,6 +259,7 @@ export default function AdminPage() {
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === ADMIN_PASSWORD) {
+      storeAuth();
       setIsAuthenticated(true);
       setError('');
     } else {
@@ -564,6 +594,14 @@ export default function AdminPage() {
             </button>
             <span className="text-sm font-medium">{isEditMode ? 'Edit Mode' : 'Preview Mode'}</span>
           </div>
+          <div className="flex items-center gap-3">
+          <Button
+            onClick={() => { clearAuth(); setIsAuthenticated(false); }}
+            variant="ghost"
+            className="text-white hover:bg-red-600 hover:text-white border border-white/20"
+          >
+            Logout
+          </Button>
           <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
             {isSaving ? (
               <>
@@ -577,6 +615,7 @@ export default function AdminPage() {
               </>
             )}
           </Button>
+          </div>
         </div>
 
         {/* Main Content */}
