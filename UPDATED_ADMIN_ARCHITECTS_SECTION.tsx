@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Star, Plus, Trash2, User, GripVertical } from 'lucide-react';
+import { Star, Plus, Trash2, User, Edit2 } from 'lucide-react';
 import { EditableWrapper } from './editable-wrapper';
 import { useEditContext } from '@/app/admin/page';
 
@@ -34,14 +34,6 @@ const initialArchitects = [
 export function AdminArchitectsSection() {
   const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
   const architects = data.architects || [];
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
-  const [localArchitects, setLocalArchitects] = useState(architects);
-  const [isReordering, setIsReordering] = useState(false);
-
-  useEffect(() => {
-    setLocalArchitects(architects);
-  }, [architects]);
 
   const handleDeleteArchitect = async (architectId: string) => {
     if (confirm('Delete this architect?')) {
@@ -63,79 +55,14 @@ export function AdminArchitectsSection() {
     }
   };
 
-  const handleEditArchitect = (architect: any, index: number) => {
+  const handleEditImage = (architect: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Open edit modal focused on image editing
     setSelectedItem({
       ...architect,
       type: 'architect',
-      index,
-      onDelete: () => handleDeleteArchitect(architect._id),
+      scrollToImage: true, // Optional: can be used to scroll to image section
     });
-  };
-
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer!.effectAllowed = 'move';
-    e.dataTransfer!.setData('text/html', '');
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    e.dataTransfer!.dropEffect = 'move';
-    if (draggedIndex !== null && draggedIndex !== index) {
-      setDraggedOverIndex(index);
-    }
-  };
-
-  const handleDragLeave = () => {
-    setDraggedOverIndex(null);
-  };
-
-  const handleDrop = async (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      setDraggedOverIndex(null);
-      return;
-    }
-
-    const newArchitects = [...localArchitects];
-    const draggedItem = newArchitects[draggedIndex];
-
-    newArchitects.splice(draggedIndex, 1);
-    newArchitects.splice(dropIndex, 0, draggedItem);
-
-    setLocalArchitects(newArchitects);
-    setDraggedIndex(null);
-    setDraggedOverIndex(null);
-
-    // Save new order to API
-    await saveArchitectOrder(newArchitects);
-  };
-
-  const saveArchitectOrder = async (orderedArchitects: any[]) => {
-    setIsReordering(true);
-    try {
-      const response = await fetch('/api/architects', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ architects: orderedArchitects }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        await refreshData();
-      } else {
-        alert('Failed to save order: ' + (result.error || 'Unknown error'));
-        setLocalArchitects(architects);
-      }
-    } catch (error) {
-      console.error('Error saving architect order:', error);
-      alert('Error saving architect order. Please try again.');
-      setLocalArchitects(architects);
-    } finally {
-      setIsReordering(false);
-    }
   };
 
   return (
@@ -156,11 +83,6 @@ export function AdminArchitectsSection() {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Visionary professionals dedicated to creating spaces that inspire and endure.
             </p>
-            {isEditMode && (
-              <p className="text-xs text-yellow-600 mt-4 font-medium">
-                💡 Drag architects to reorder them
-              </p>
-            )}
           </div>
         </EditableWrapper>
 
@@ -186,46 +108,42 @@ export function AdminArchitectsSection() {
             </Card>
           )}
 
-          {localArchitects.map((architect: any, index: number) => (
-            <div
-              key={architect._id || architect.id || index}
-              className="relative group"
-              draggable={isEditMode}
-              onDragStart={(e) => isEditMode && handleDragStart(e, index)}
-              onDragOver={(e) => isEditMode && handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => isEditMode && handleDrop(e, index)}
-              style={{
-                opacity: draggedIndex === index ? 0.5 : 1,
-                backgroundColor: draggedOverIndex === index ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                borderRadius: '0.5rem',
-                transition: 'all 0.2s ease',
-              }}
-            >
+          {architects.map((architect: any, index: number) => (
+            <div key={architect._id || architect.id || index} className="relative group">
               <EditableWrapper
-                onEdit={() => handleEditArchitect(architect, index)}
+                onEdit={() => setSelectedItem({
+                  ...architect,
+                  type: 'architect',
+                  index,
+                  onDelete: () => handleDeleteArchitect(architect._id)
+                })}
               >
-                <Card
-                  className="overflow-hidden hover:shadow-lg transition-all cursor-pointer"
-                  onClick={() => isEditMode && handleEditArchitect(architect, index)}
-                >
-                  {/* Drag Handle - Only in edit mode */}
-                  {isEditMode && (
-                    <div className="absolute top-2 right-2 z-10 bg-blue-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg cursor-grab active:cursor-grabbing hover:bg-blue-600">
-                      <GripVertical className="h-4 w-4" />
-                    </div>
-                  )}
-
-                  {/* Image Container */}
+                <Card className="overflow-hidden hover:shadow-lg transition-all">
+                  {/* Image Container with Edit Button */}
                   <div className="relative h-96 bg-muted">
                     {architect.image ? (
-                      <Image
-                        src={architect.image}
-                        alt={architect.name}
-                        fill
-                        className="object-cover"
-                        draggable={false}
-                      />
+                      <>
+                        <Image
+                          src={architect.image}
+                          alt={architect.name}
+                          fill
+                          className="object-cover"
+                        />
+                        {/* Edit Image Button - Appears on Hover */}
+                        {isEditMode && (
+                          <button
+                            onClick={(e) => handleEditImage(architect, e)}
+                            className="absolute inset-0 w-full h-full flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          >
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-colors">
+                                <Edit2 className="h-6 w-6" />
+                              </div>
+                              <span className="text-white font-medium text-sm">Edit Image</span>
+                            </div>
+                          </button>
+                        )}
+                      </>
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-secondary/40">
                         <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
@@ -250,27 +168,18 @@ export function AdminArchitectsSection() {
                 </Card>
               </EditableWrapper>
 
-              {/* Delete Button - Only on hover in edit mode */}
+              {/* Delete Button */}
               {isEditMode && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteArchitect(architect._id);
                   }}
-                  className="absolute bottom-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                  className="absolute top-2 left-2 z-20 bg-red-500 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                   title="Delete Architect"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
-              )}
-
-              {/* Reordering indicator */}
-              {isReordering && (
-                <div className="absolute inset-0 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                  <div className="bg-white rounded-full p-2 shadow-lg">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-                  </div>
-                </div>
               )}
             </div>
           ))}

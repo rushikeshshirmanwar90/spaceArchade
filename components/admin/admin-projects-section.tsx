@@ -1,23 +1,22 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EditableWrapper } from './editable-wrapper';
 import { useEditContext } from '@/app/admin/page';
 import { Plus, Trash2, Edit2, Upload } from 'lucide-react';
+import { ProjectImageSwiper } from '@/components/project-image-swiper';
 
 export function AdminProjectsSection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { setSelectedItem, isEditMode, data, refreshData } = useEditContext();
   const projects = data.projects;
+  const categories = data.categories || [];
 
   const filteredProjects = selectedCategory
     ? projects.filter((p: any) => p.category === selectedCategory)
     : projects;
-
-  const categories = Array.from(new Set(projects.map((p: any) => p.category)));
 
   const handleDeleteProject = async (projectId: string) => {
     if (confirm('Delete this project?')) {
@@ -39,13 +38,50 @@ export function AdminProjectsSection() {
     }
   };
 
+  const handleDeleteCategory = async (categoryName: string) => {
+    // Check if any projects use this category
+    const projectsInCategory = projects.filter((p: any) => p.category === categoryName);
+
+    if (projectsInCategory.length > 0) {
+      alert(
+        `Cannot delete category "${categoryName}".\n\n` +
+        `This category has ${projectsInCategory.length} project(s) assigned to it.\n\n` +
+        `Please either:\n` +
+        `1. Delete the projects first, OR\n` +
+        `2. Change their category to a different one`
+      );
+      return;
+    }
+
+    if (confirm(`Delete category "${categoryName}"?`)) {
+      try {
+        const response = await fetch(`/api/categories/${encodeURIComponent(categoryName)}`, {
+          method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('Category deleted successfully!');
+          if (selectedCategory === categoryName) {
+            setSelectedCategory(null);
+          }
+          await refreshData();
+        } else {
+          alert('Error deleting category: ' + (result.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        alert('Error deleting category. Please try again.');
+      }
+    }
+  };
+
   const handleAddProject = (category: string | null) => {
     setSelectedItem({
       type: 'newProject',
       category: category || 'Uncategorized',
       title: '',
       location: '',
-      image: '',
+      images: [],
       description: '',
     });
   };
@@ -79,19 +115,18 @@ export function AdminProjectsSection() {
           >
             All Projects
           </Button>
-          
-          {categories.map((cat) => (
-            <div key={cat} className="relative group">
+
+          {categories.map((cat: any) => (
+            <div key={cat.name || cat._id} className="relative group">
               <Button
-                variant={selectedCategory === cat ? 'default' : 'outline'}
-                onClick={() => setSelectedCategory(cat)}
-                className={`${selectedCategory === cat ? 'bg-primary text-primary-foreground' : ''} ${
-                  isEditMode ? 'pr-16' : ''
-                }`}
+                variant={selectedCategory === cat.name ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(cat.name)}
+                className={`${selectedCategory === cat.name ? 'bg-primary text-primary-foreground' : ''} ${isEditMode ? 'pr-16' : ''
+                  }`}
               >
-                {cat}
+                {cat.name}
               </Button>
-              
+
               {isEditMode && (
                 <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
                   <button
@@ -99,12 +134,12 @@ export function AdminProjectsSection() {
                       e.stopPropagation();
                       setSelectedItem({
                         type: 'editCategory',
-                        oldName: cat,
-                        newName: cat,
+                        oldName: cat.name,
+                        newName: cat.name,
                         onSave: async (updatedCategory: string) => {
                           // Update all projects with this category
-                          const projectsToUpdate = projects.filter((p: any) => p.category === cat);
-                          
+                          const projectsToUpdate = projects.filter((p: any) => p.category === cat.name);
+
                           for (const project of projectsToUpdate) {
                             await fetch(`/api/projects/${project._id}`, {
                               method: 'PUT',
@@ -115,7 +150,17 @@ export function AdminProjectsSection() {
                               }),
                             });
                           }
-                          
+
+                          // Update category in database
+                          await fetch('/api/categories', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              oldName: cat.name,
+                              newName: updatedCategory,
+                            }),
+                          });
+
                           await refreshData();
                           alert('Category updated successfully!');
                         },
@@ -126,24 +171,9 @@ export function AdminProjectsSection() {
                     <Edit2 className="h-3 w-3" />
                   </button>
                   <button
-                    onClick={async (e) => {
+                    onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm(`Delete category "${cat}" and all its projects?`)) {
-                        // Delete all projects in this category
-                        const projectsToDelete = projects.filter((p: any) => p.category === cat);
-                        
-                        for (const project of projectsToDelete) {
-                          await fetch(`/api/projects/${project._id}`, {
-                            method: 'DELETE',
-                          });
-                        }
-                        
-                        await refreshData();
-                        if (selectedCategory === cat) {
-                          setSelectedCategory(null);
-                        }
-                        alert('Category and all its projects deleted!');
-                      }
+                      handleDeleteCategory(cat.name);
                     }}
                     className="bg-red-500 text-white rounded p-1 hover:bg-red-600 transition-colors"
                   >
@@ -163,40 +193,39 @@ export function AdminProjectsSection() {
                     type: 'newCategory',
                     name: '',
                     onSave: async (categoryName: string) => {
-                      // Create a new project with this category
-                      const response = await fetch('/api/projects', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          title: `New ${categoryName} Project`,
-                          location: 'Location',
-                          category: categoryName,
-                          image: '/placeholder.jpg',
-                          description: 'Add description here',
-                        }),
-                      });
-                      
-                      const result = await response.json();
-                      if (result.success) {
-                        await refreshData();
-                        setSelectedCategory(categoryName);
-                        alert(`Category "${categoryName}" created successfully!`);
-                      } else {
-                        alert('Error creating category: ' + (result.error || 'Unknown error'));
+                      // Only create the category, no project
+                      try {
+                        const response = await fetch('/api/categories', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ name: categoryName }),
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                          await refreshData();
+                          setSelectedCategory(categoryName);
+                          alert(`Category "${categoryName}" created successfully!`);
+                        } else {
+                          alert('Error creating category: ' + (result.error || 'Unknown error'));
+                        }
+                      } catch (error) {
+                        console.error('Error creating category:', error);
+                        alert('Error creating category. Please try again.');
                       }
                     },
                   })
                 }
-                className="border-dashed border-2 border-green-400 hover:border-green-600 hover:bg-green-50/10"
+                className="border-dashed border-2 border-green-400"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Category
               </Button>
-              
+
               <Button
                 variant="outline"
                 onClick={() => handleAddProject(selectedCategory)}
-                className="border-dashed border-2 border-blue-400 hover:border-blue-600 hover:bg-blue-50/10"
+                className="border-dashed border-2 border-blue-400"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Project
@@ -240,14 +269,10 @@ export function AdminProjectsSection() {
                 }
               >
                 <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-                  <div className="relative h-64 overflow-hidden bg-muted">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
+                  {(() => {
+                    const imgs = project.images?.length ? project.images : project.image ? [project.image] : [];
+                    return <ProjectImageSwiper images={imgs} alt={project.title} />;
+                  })()}
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">

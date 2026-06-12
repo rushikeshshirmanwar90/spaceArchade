@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { X, Upload, Trash2, Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
-import { handleSingleImageUpload } from '@/lib/image-upload';
+import { handleSingleImageUpload, handleImageUpload } from '@/lib/image-upload';
 import Image from 'next/image';
+import { ImageCropperInline } from './image-cropper-inline';
 
 interface EditModalProps {
   item: any;
@@ -20,6 +21,28 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const [showImageCropper, setShowImageCropper] = useState(item.scrollToImage && item.image ? true : false);
+  const [tempImageForCrop, setTempImageForCrop] = useState<string | null>(item.scrollToImage && item.image ? item.image : null);
+
+  const handleImageUploadForCrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageData = event.target?.result as string;
+      setTempImageForCrop(imageData);
+      setShowImageCropper(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    setEditedItem({ ...editedItem, image: croppedImage });
+    setShowImageCropper(false);
+    setTempImageForCrop(null);
+  };
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, key: string = 'image') => {
     try {
       await handleSingleImageUpload(
@@ -31,6 +54,21 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
       );
     } catch (error) {
       console.error('Error uploading image:', error);
+    }
+  };
+
+  const handleMultiImageChange = async (e: React.ChangeEvent<HTMLInputElement>, key: string = 'images') => {
+    try {
+      await handleImageUpload(
+        e,
+        (urls: string[]) => {
+          const currentImages = Array.isArray(editedItem[key]) ? editedItem[key] : [];
+          setEditedItem({ ...editedItem, [key]: [...currentImages, ...urls] });
+        },
+        setIsLoading
+      );
+    } catch (error) {
+      console.error('Error uploading images:', error);
     }
   };
 
@@ -123,6 +161,70 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
             <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
               Uploading image...
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Render multi-image upload field
+  const renderMultiImageUpload = (key: string) => {
+    const images = Array.isArray(editedItem[key]) ? editedItem[key] : [];
+
+    return (
+      <div>
+        <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</Label>
+        <div className="mt-2 space-y-4">
+          {images.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {images.map((img: string, index: number) => (
+                <div key={index} className="relative group h-32 rounded-lg overflow-hidden border-2 border-border">
+                  <Image src={img} alt={`Preview ${index + 1}`} fill className="object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newImages = [...images];
+                      newImages.splice(index, 1);
+                      setEditedItem({ ...editedItem, [key]: newImages });
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <label
+            htmlFor={`multi-image-upload-${key}`}
+            className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-400 rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-all group"
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <Upload className="h-6 w-6 text-muted-foreground mb-2 group-hover:text-blue-500 transition-colors" />
+              <p className="mb-1 text-sm font-semibold text-foreground">
+                Click to upload images
+              </p>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPG, WEBP up to 10MB
+              </p>
+            </div>
+            <input
+              id={`multi-image-upload-${key}`}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleMultiImageChange(e, key)}
+              disabled={isLoading}
+              className="hidden"
+            />
+          </label>
+          
+          {isLoading && (
+            <div className="flex items-center gap-2 text-sm text-blue-600">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+              Uploading images...
             </div>
           )}
         </div>
@@ -1064,6 +1166,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
           </div>
 
           <div className="p-6 space-y-6">
+            {/* Name Field */}
             <div>
               <Label>Name</Label>
               <Input
@@ -1072,6 +1175,8 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                 placeholder="Architect name"
               />
             </div>
+
+            {/* Title Field */}
             <div>
               <Label>Title</Label>
               <Input
@@ -1080,6 +1185,8 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                 placeholder="e.g., Principal Architect"
               />
             </div>
+
+            {/* Bio Field */}
             <div>
               <Label>Bio</Label>
               <Textarea
@@ -1089,10 +1196,290 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                 placeholder="Brief biography"
               />
             </div>
-            {renderImageUpload('image')}
+
+            {/* Image Upload with Edit Option */}
+            <div>
+              <Label>Photo</Label>
+              
+              {editedItem.image && !showImageCropper ? (
+                <div className="mt-2 space-y-3">
+                  <div className="relative group">
+                    <div className="relative w-64 aspect-[3/4] mx-auto rounded-lg overflow-hidden border-2 border-border">
+                      <img
+                        src={editedItem.image}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* 3-button hover overlay */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/60 rounded-lg w-64 mx-auto flex flex-col items-center justify-center gap-3 px-4">
+                      {/* 1: Edit Image — opens cropper on CURRENT image */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTempImageForCrop(editedItem.image);
+                          setShowImageCropper(true);
+                        }}
+                        className="w-full bg-green-500 hover:bg-green-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        ✏️ Edit Image
+                      </button>
+                      {/* 2: Change Image — opens file picker to upload NEW image */}
+                      <label
+                        htmlFor="change-image-input-new"
+                        className="w-full bg-blue-500 hover:bg-blue-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium cursor-pointer transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        🔄 Change Image
+                      </label>
+                      <input
+                        id="change-image-input-new"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUploadForCrop}
+                        className="hidden"
+                      />
+                      {/* 3: Delete — removes the image */}
+                      <button
+                        type="button"
+                        onClick={() => setEditedItem({ ...editedItem, image: '' })}
+                        className="w-full bg-red-500 hover:bg-red-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        🗑️ Delete Image
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Hover over image for options
+                  </p>
+                </div>
+              ) : !editedItem.image && !showImageCropper ? (
+                <label
+                  htmlFor="architect-image-input-new"
+                  className="mt-2 relative flex flex-col items-center justify-center w-64 aspect-[3/4] mx-auto border-2 border-dashed border-blue-400 rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-all group"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                      <Plus className="h-6 w-6" />
+                    </div>
+                    <ImageIcon className="h-8 w-8 text-muted-foreground mb-2 opacity-50" />
+                    <p className="mb-1 text-xs font-semibold text-foreground">
+                      Click to upload photo
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      PNG, JPG, WEBP up to 10MB
+                    </p>
+                  </div>
+                  <input
+                    id="architect-image-input-new"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUploadForCrop}
+                    disabled={isLoading}
+                    className="hidden"
+                  />
+                </label>
+              ) : null}
+
+              {/* Image Cropper */}
+              {showImageCropper && tempImageForCrop && (
+                <ImageCropperInline
+                  imageSrc={tempImageForCrop}
+                  onCrop={handleCropComplete}
+                  onCancel={() => {
+                    setShowImageCropper(false);
+                    setTempImageForCrop(null);
+                  }}
+                  aspectRatio={3/4}
+                />
+              )}
+
+              {isLoading && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                  Processing image...
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading || !editedItem.name || !editedItem.title || !editedItem.bio}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Add Architect'
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle edit architect
+  if (item.type === 'architect') {
+    return (
+      <div className="fixed inset-0 bg-black/50 z-200 flex items-center justify-center p-4">
+        <div className="bg-background rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-background border-b border-border p-6 flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Edit Architect</h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Name Field */}
+            <div>
+              <Label>Name</Label>
+              <Input
+                value={editedItem.name}
+                onChange={(e) => setEditedItem({ ...editedItem, name: e.target.value })}
+                placeholder="Architect name"
+              />
+            </div>
+
+            {/* Title Field */}
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={editedItem.title}
+                onChange={(e) => setEditedItem({ ...editedItem, title: e.target.value })}
+                placeholder="e.g., Principal Architect"
+              />
+            </div>
+
+            {/* Bio Field */}
+            <div>
+              <Label>Bio</Label>
+              <Textarea
+                value={editedItem.bio}
+                onChange={(e) => setEditedItem({ ...editedItem, bio: e.target.value })}
+                rows={4}
+                placeholder="Brief biography"
+              />
+            </div>
+
+            {/* Image Upload with Edit Option */}
+            <div>
+              <Label>Photo</Label>
+              
+              {editedItem.image && !showImageCropper ? (
+                <div className="mt-2 space-y-3">
+                  <div className="relative group">
+                    <div className="relative w-64 aspect-[3/4] mx-auto rounded-lg overflow-hidden border-2 border-border">
+                      <img
+                        src={editedItem.image}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* 3-button hover overlay */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/60 rounded-lg w-64 mx-auto flex flex-col items-center justify-center gap-3 px-4">
+                      {/* 1: Edit Image — opens cropper on CURRENT image */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTempImageForCrop(editedItem.image);
+                          setShowImageCropper(true);
+                        }}
+                        className="w-full bg-green-500 hover:bg-green-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        ✏️ Edit Image
+                      </button>
+                      {/* 2: Change Image — opens file picker to upload NEW image */}
+                      <label
+                        htmlFor="change-image-input-edit"
+                        className="w-full bg-blue-500 hover:bg-blue-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium cursor-pointer transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        🔄 Change Image
+                      </label>
+                      <input
+                        id="change-image-input-edit"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUploadForCrop}
+                        className="hidden"
+                      />
+                      {/* 3: Delete — removes the image */}
+                      <button
+                        type="button"
+                        onClick={() => setEditedItem({ ...editedItem, image: '' })}
+                        className="w-full bg-red-500 hover:bg-red-600 active:scale-95 text-white py-2 px-3 rounded-lg font-medium transition-all text-xs flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        🗑️ Delete Image
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Hover over image for options
+                  </p>
+                </div>
+              ) : !editedItem.image && !showImageCropper ? (
+                <label
+                  htmlFor="architect-image-input-edit"
+                  className="mt-2 relative flex flex-col items-center justify-center w-64 aspect-[3/4] mx-auto border-2 border-dashed border-blue-400 rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-all group"
+                >
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg">
+                      <Plus className="h-6 w-6" />
+                    </div>
+                    <ImageIcon className="h-8 w-8 text-muted-foreground mb-2 opacity-50" />
+                    <p className="mb-1 text-xs font-semibold text-foreground">
+                      Click to upload photo
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      PNG, JPG, WEBP up to 10MB
+                    </p>
+                  </div>
+                  <input
+                    id="architect-image-input-edit"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUploadForCrop}
+                    disabled={isLoading}
+                    className="hidden"
+                  />
+                </label>
+              ) : null}
+
+              {/* Image Cropper */}
+              {showImageCropper && tempImageForCrop && (
+                <ImageCropperInline
+                  imageSrc={tempImageForCrop}
+                  onCrop={handleCropComplete}
+                  onCancel={() => {
+                    setShowImageCropper(false);
+                    setTempImageForCrop(null);
+                  }}
+                  aspectRatio={3/4}
+                />
+              )}
+
+              {isLoading && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                  Processing image...
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              className="flex-1"
+              disabled={isSaving}
+            >
+              Delete Architect
+            </Button>
             <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
@@ -1103,7 +1490,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                   Saving...
                 </>
               ) : (
-                'Add Architect'
+                'Update Architect'
               )}
             </Button>
           </div>
@@ -1416,7 +1803,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                 placeholder="Project description"
               />
             </div>
-            {renderImageUpload('image')}
+            {renderMultiImageUpload('images')}
           </div>
 
           <div className="sticky bottom-0 bg-background border-t border-border p-6 flex gap-3">
@@ -1470,6 +1857,8 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
               <div key={key}>
                 {key === 'image' || key === 'src' ? (
                   renderImageUpload(key)
+                ) : key === 'images' ? (
+                  renderMultiImageUpload(key)
                 ) : key === 'description' || key === 'bio' || key === 'message' ? (
                   <div>
                     <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</Label>

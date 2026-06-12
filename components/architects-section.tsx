@@ -57,7 +57,7 @@ export function ArchitectsSection() {
           ) : (
             architects.map((architect) => (
               <Card key={architect._id} className="overflow-hidden hover:shadow-lg transition-all">
-                <div className="relative h-96 bg-muted">
+                <div className="relative w-full aspect-[3/4] bg-muted">
                   {architect.image ? (
                     <Image
                       src={architect.image}

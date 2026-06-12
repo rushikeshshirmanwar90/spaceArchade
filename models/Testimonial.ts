@@ -3,9 +3,9 @@ import mongoose, { Schema, models } from 'mongoose';
 const testimonialSchema = new Schema(
   {
     name: { type: String, required: true },
-    position: { type: String, required: true },
-    company: { type: String, required: true },
     message: { type: String, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5, default: 5 },
+    approved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

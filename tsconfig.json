@@ -36,6 +36,9 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "EDIT_MODAL_IMAGE_SECTION_UPDATED.tsx",
+    "UPDATED_ADMIN_ARCHITECTS_SECTION.tsx",
+    "UPDATED_ARCHITECT_FORMS_BUTTON_LAYOUT.tsx"
   ]
 }

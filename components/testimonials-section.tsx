@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 
 interface Testimonial {
   _id: string;
   name: string;
-  position: string;
-  company: string;
   message: string;
+  rating?: number;
 }
 
 export function TestimonialsSection() {
@@ -43,32 +44,43 @@ export function TestimonialsSection() {
     );
   }
 
+  const renderStars = (rating: number = 5) => {
+    return [...Array(5)].map((_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < rating ? 'fill-primary text-primary' : 'text-muted-foreground'
+        }`}
+      />
+    ));
+  };
+
   return (
     <section id="testimonials" className="py-20 px-6">
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Client Testimonials</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             Hear from our satisfied clients about their transformative architectural experiences.
           </p>
+          <Link href="/submit-testimonial">
+            <Button variant="default">
+              Share Your Experience
+            </Button>
+          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
             <Card key={testimonial._id} className="p-8 hover:shadow-lg transition-all">
               <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                ))}
+                {renderStars(testimonial.rating)}
               </div>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 &quot;{testimonial.message}&quot;
               </p>
               <div className="border-t border-border pt-4">
                 <p className="font-semibold">{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {testimonial.position}, {testimonial.company}
-                </p>
               </div>
             </Card>
           ))}

@@ -98,6 +98,7 @@ interface EditContextType {
     processSteps: any[];
     collectionImages: any[];
     stats: any;
+    categories: any[];
     about: typeof DEFAULT_ABOUT;
     cta: typeof DEFAULT_CTA;
     contact: typeof DEFAULT_CONTACT;
@@ -118,6 +119,7 @@ const EditContext = createContext<EditContextType>({
     processSteps: [],
     collectionImages: [],
     stats: null,
+    categories: [],
     about: DEFAULT_ABOUT,
     cta: DEFAULT_CTA,
     contact: DEFAULT_CONTACT,
@@ -185,6 +187,7 @@ export default function AdminPage() {
     processSteps: [],
     collectionImages: [],
     stats: null,
+    categories: [],
     about: DEFAULT_ABOUT,
     cta: DEFAULT_CTA,
     contact: DEFAULT_CONTACT,
@@ -195,7 +198,7 @@ export default function AdminPage() {
   const fetchData = async () => {
     try {
       const opts = { cache: 'no-store' as RequestCache };
-      const [heroRes, projectsRes, architectsRes, testimonialsRes, processRes, collectionRes, statsRes, settingsRes] =
+      const [heroRes, projectsRes, architectsRes, testimonialsRes, processRes, collectionRes, statsRes, categoriesRes, settingsRes] =
         await Promise.all([
           fetch('/api/hero-slides', opts),
           fetch('/api/projects', opts),
@@ -204,10 +207,11 @@ export default function AdminPage() {
           fetch('/api/process-steps', opts),
           fetch('/api/collection-images', opts),
           fetch('/api/stats', opts),
+          fetch("/api/categories", opts),
           fetch('/api/settings', opts),
         ]);
 
-      const [hero, projects, architects, testimonials, process, collection, stats, settingsAll] =
+      const [hero, projects, architects, testimonials, process, collection, stats, categories, settingsAll] =
         await Promise.all([
           heroRes.json(),
           projectsRes.json(),
@@ -216,6 +220,7 @@ export default function AdminPage() {
           processRes.json(),
           collectionRes.json(),
           statsRes.json(),
+          categoriesRes.json(),
           settingsRes.json(),
         ]);
 
@@ -235,6 +240,7 @@ export default function AdminPage() {
         processSteps: process.success ? process.data : [],
         collectionImages: collection.success ? collection.data : [],
         stats: stats.success ? stats.data : null,
+        categories: categories.success ? categories.data : [],
         about: settingsMap['about'] ? { ...DEFAULT_ABOUT, ...settingsMap['about'] } : DEFAULT_ABOUT,
         cta: settingsMap['cta'] ? { ...DEFAULT_CTA, ...settingsMap['cta'] } : DEFAULT_CTA,
         contact: settingsMap['contact']

@@ -1,9 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ProjectImageSwiper } from './project-image-swiper';
 
 interface Project {
   _id: string;
@@ -11,6 +11,7 @@ interface Project {
   location: string;
   category: string;
   image: string;
+  images: string[];
   description: string;
 }
 
@@ -19,7 +20,6 @@ export function ProjectsSection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch projects from API
   useEffect(() => {
     async function fetchProjects() {
       try {
@@ -85,31 +85,28 @@ export function ProjectsSection() {
               <p className="text-muted-foreground">No projects found</p>
             </div>
           ) : (
-            filteredProjects.map((project) => (
-              <Card
-                key={project._id}
-                className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
-              >
-                <div className="relative h-64 overflow-hidden bg-muted">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                      {project.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{project.location}</span>
+            filteredProjects.map((project) => {
+              // Normalise: prefer the `images` array, fall back to legacy `image`
+              const imgs = project.images?.length ? project.images : project.image ? [project.image] : [];
+              return (
+                <Card
+                  key={project._id}
+                  className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
+                >
+                  <ProjectImageSwiper images={imgs} alt={project.title} />
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                        {project.category}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{project.location}</span>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                    <p className="text-muted-foreground text-sm">{project.description}</p>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                  <p className="text-muted-foreground text-sm">{project.description}</p>
-                </div>
-              </Card>
-            ))
+                </Card>
+              );
+            })
           )}
         </div>
       </div>

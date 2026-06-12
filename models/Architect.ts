@@ -6,6 +6,7 @@ const architectSchema = new Schema(
     title: { type: String, required: true },
     image: { type: String, default: '' },
     bio: { type: String, required: true },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
