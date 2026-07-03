@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ARTIFACT - Contemporary Architectural Design',
-  description: 'Discover award-winning architectural design showcases and luxury real estate projects. Meet our architects and explore stunning modern homes.',
+  title: 'Space Archade - Contemporary Architectural Design',
+  description: 'Space Archade designs spaces that breathe, inspire, and endure. Explore our award-winning architectural projects, luxury real estate, and the architects behind our eco-conscious, timeless designs.',
   generator: 'v0.app',
   icons: {
     icon: [
