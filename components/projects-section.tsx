@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ProjectImageSwiper } from './project-image-swiper';
+import { Reveal } from '@/components/reveal';
 
 interface Project {
   _id: string;
@@ -46,15 +47,15 @@ export function ProjectsSection() {
   return (
     <section id="projects" className="py-20 px-6">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Design Showcases</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Discover our portfolio of award-winning projects spanning residential, commercial, and hospitality sectors.
           </p>
-        </div>
+        </Reveal>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <Reveal delay={100} className="flex flex-wrap justify-center gap-3 mb-12">
           <Button
             variant={selectedCategory === null ? 'default' : 'outline'}
             onClick={() => setSelectedCategory(null)}
@@ -72,7 +73,7 @@ export function ProjectsSection() {
               {cat}
             </Button>
           ))}
-        </div>
+        </Reveal>
 
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -85,26 +86,25 @@ export function ProjectsSection() {
               <p className="text-muted-foreground">No projects found</p>
             </div>
           ) : (
-            filteredProjects.map((project) => {
+            filteredProjects.map((project, index) => {
               // Normalise: prefer the `images` array, fall back to legacy `image`
               const imgs = project.images?.length ? project.images : project.image ? [project.image] : [];
               return (
-                <Card
-                  key={project._id}
-                  className="overflow-hidden group cursor-pointer hover:shadow-lg transition-all duration-300"
-                >
-                  <ProjectImageSwiper images={imgs} alt={project.title} />
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                        {project.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{project.location}</span>
+                <Reveal key={project._id} delay={(index % 3) * 120}>
+                  <Card className="overflow-hidden group cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-500 h-full">
+                    <ProjectImageSwiper images={imgs} alt={project.title} />
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                          {project.category}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{project.location}</span>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                      <p className="text-muted-foreground text-sm">{project.description}</p>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                    <p className="text-muted-foreground text-sm">{project.description}</p>
-                  </div>
-                </Card>
+                  </Card>
+                </Reveal>
               );
             })
           )}

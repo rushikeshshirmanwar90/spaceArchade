@@ -93,7 +93,7 @@ export function AdminFooter() {
           >
             <div>
               <div className="relative h-10 w-40 mb-4">
-                <Image src="/logo.png" alt="Space Archade Logo" fill className="object-contain object-left" />
+                <Image src="/logo.png" alt="Space Archade Logo" fill className="object-contain object-left brightness-0 invert" />
               </div>
               <p className="text-sm text-muted-foreground">{brandDescription}</p>
             </div>

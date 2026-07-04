@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Compass, Leaf, Layers, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Reveal } from '@/components/reveal';
 
 const DEFAULT_ABOUT = {
   badge: 'Our Philosophy',
@@ -50,7 +51,7 @@ export function AboutSection() {
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
 
           {/* Left Column: Premium Interactive Images */}
-          <div className="lg:col-span-6 relative">
+          <Reveal direction="left" className="lg:col-span-6 relative">
             <div className="relative aspect-square w-full max-w-[540px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border group">
               <Image
                 src={about.image}
@@ -75,10 +76,10 @@ export function AboutSection() {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
 
           {/* Right Column: Detailed Premium Copy */}
-          <div className="lg:col-span-6 flex flex-col gap-6 lg:pl-4">
+          <Reveal direction="right" delay={150} className="lg:col-span-6 flex flex-col gap-6 lg:pl-4">
             <div>
               <p className="text-xs md:text-sm text-primary font-semibold uppercase tracking-[0.2em] mb-3">
                 {about.badge}
@@ -101,7 +102,7 @@ export function AboutSection() {
                 </Button>
               </Link>
             </div>
-          </div>
+          </Reveal>
 
         </div>
       </div>

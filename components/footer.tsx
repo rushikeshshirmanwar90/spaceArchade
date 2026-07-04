@@ -63,7 +63,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="relative h-10 w-40 mb-4">
-              <Image src="/logo.png" alt="Space Archade Logo" fill className="object-contain object-left" />
+              <Image src="/logo.png" alt="Space Archade Logo" fill className="object-contain object-left brightness-0 invert" />
             </div>
             <p className="text-sm text-muted-foreground">{footer.brandDescription}</p>
           </div>
@@ -74,7 +74,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               {footer.companyLinks.map((link: any, index: number) => (
                 <li key={link.id || index}>
-                  <a href={link.href} className="hover:text-foreground transition-colors">
+                  <a href={link.href} className="inline-block hover:text-foreground hover:translate-x-1 transition-all duration-300">
                     {link.label}
                   </a>
                 </li>
@@ -102,7 +102,7 @@ export function Footer() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all duration-300"
                   >
                     {getSocialIcon(link.icon)}
                     <span>{link.platform}</span>

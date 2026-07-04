@@ -85,13 +85,13 @@ export function WhatsAppWidget() {
                 <WhatsAppIcon className="h-6 w-6 text-[#25D366]" />
               </div>
               <div className="bg-white rounded-lg rounded-tl-none p-3 shadow-sm max-w-[80%]">
-                <p className="text-sm text-foreground mb-1">
+                <p className="text-sm text-gray-800 mb-1">
                   Hello! Welcome to Space Archade 👋
                 </p>
-                <p className="text-sm text-foreground">
+                <p className="text-sm text-gray-800">
                   How can I help you today? :)
                 </p>
-                <span className="text-xs text-muted-foreground mt-1 block">Just now</span>
+                <span className="text-xs text-gray-500 mt-1 block">Just now</span>
               </div>
             </div>
           </div>
