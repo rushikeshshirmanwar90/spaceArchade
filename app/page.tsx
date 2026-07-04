@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigation } from '@/components/navigation';
 import { HeroSection } from '@/components/hero-section';
+import { WelcomeIntro } from '@/components/welcome-intro';
 import { AboutSection } from '@/components/about-section';
 import { ProjectsSection } from '@/components/projects-section';
 import { ArchitectsSection } from '@/components/architects-section';
@@ -15,6 +16,8 @@ import { Footer } from '@/components/footer';
 import { WhatsAppWidget } from '@/components/whatsapp-widget';
 
 export default function Home() {
+  const [introDone, setIntroDone] = useState(false);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -45,8 +48,9 @@ export default function Home() {
 
   return (
     <div className="w-full bg-background text-foreground">
+      <WelcomeIntro onFinish={() => setIntroDone(true)} />
       <Navigation />
-      <HeroSection />
+      <HeroSection introDone={introDone} />
       <AboutSection />
       <ProjectsSection />
       <ArchitectsSection />

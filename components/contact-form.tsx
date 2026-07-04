@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Reveal } from '@/components/reveal';
 
 const DEFAULT_CONTACT = {
   title: 'Get In Touch',
@@ -39,11 +40,12 @@ export function ContactForm() {
   return (
     <section id="contact" className="py-20 px-6 bg-muted/20">
       <div className="mx-auto max-w-3xl">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">{contact.title}</h2>
           <p className="text-lg text-muted-foreground">{contact.description}</p>
-        </div>
+        </Reveal>
 
+        <Reveal delay={100}>
         <Card className="p-8">
           <form
             onSubmit={(e) => {
@@ -75,7 +77,7 @@ export function ContactForm() {
                 id="fullName"
                 name="fullName"
                 required
-                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring transition-shadow duration-300"
                 placeholder="Enter your full name"
               />
             </div>
@@ -88,7 +90,7 @@ export function ContactForm() {
                 id="service"
                 name="service"
                 required
-                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring transition-shadow duration-300"
               >
                 <option value="">Select a service</option>
                 {contact.services.map((service, index) => (
@@ -108,7 +110,7 @@ export function ContactForm() {
                 name="message"
                 required
                 rows={5}
-                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                className="w-full px-4 py-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-shadow duration-300"
                 placeholder="Tell us about your project..."
               />
             </div>
@@ -116,12 +118,13 @@ export function ContactForm() {
             <Button
               type="submit"
               size="lg"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
             >
               Send Message via WhatsApp
             </Button>
           </form>
         </Card>
+        </Reveal>
       </div>
     </section>
   );

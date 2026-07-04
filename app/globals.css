@@ -36,75 +36,77 @@
   font-display: swap;
 }
 
+/* Light theme with gold accent (default: light; toggle switches to .dark) */
 :root {
   --background: oklch(0.98 0.002 240);
   --foreground: oklch(0.2 0.015 240);
-  --card: oklch(0.99 0.001 240);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.015 240);
-  --popover: oklch(0.99 0.001 240);
+  --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.015 240);
-  --primary: oklch(0.35 0.08 240);
-  --primary-foreground: oklch(0.98 0.002 240);
-  --secondary: oklch(0.65 0.12 30);
-  --secondary-foreground: oklch(0.98 0.002 240);
-  --muted: oklch(0.92 0.01 240);
+  --primary: oklch(0.66 0.12 85);
+  --primary-foreground: oklch(0.2 0 0);
+  --secondary: oklch(0.93 0.005 240);
+  --secondary-foreground: oklch(0.2 0.015 240);
+  --muted: oklch(0.93 0.005 240);
   --muted-foreground: oklch(0.5 0.02 240);
-  --accent: oklch(0.65 0.12 30);
-  --accent-foreground: oklch(0.98 0.002 240);
+  --accent: oklch(0.93 0.005 240);
+  --accent-foreground: oklch(0.2 0.015 240);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0.002 240);
   --border: oklch(0.88 0.01 240);
   --input: oklch(0.88 0.01 240);
-  --ring: oklch(0.35 0.08 240);
-  --chart-1: oklch(0.35 0.08 240);
-  --chart-2: oklch(0.65 0.12 30);
-  --chart-3: oklch(0.55 0.1 180);
-  --chart-4: oklch(0.45 0.09 280);
-  --chart-5: oklch(0.6 0.11 60);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.99 0.001 240);
-  --sidebar-foreground: oklch(0.2 0.015 240);
-  --sidebar-primary: oklch(0.35 0.08 240);
-  --sidebar-primary-foreground: oklch(0.98 0.002 240);
-  --sidebar-accent: oklch(0.65 0.12 30);
-  --sidebar-accent-foreground: oklch(0.98 0.002 240);
-  --sidebar-border: oklch(0.88 0.01 240);
-  --sidebar-ring: oklch(0.35 0.08 240);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
+  --ring: oklch(0.66 0.12 85);
+  --chart-1: oklch(0.66 0.12 85);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.2 0.015 240);
+  --sidebar-primary: oklch(0.66 0.12 85);
+  --sidebar-primary-foreground: oklch(0.2 0 0);
+  --sidebar-accent: oklch(0.93 0.005 240);
+  --sidebar-accent-foreground: oklch(0.2 0.015 240);
+  --sidebar-border: oklch(0.88 0.01 240);
+  --sidebar-ring: oklch(0.66 0.12 85);
+}
+
+/* Dark charcoal theme with gold accent */
+.dark {
+  --background: oklch(0.22 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.265 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.265 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.76 0.12 85);
+  --primary-foreground: oklch(0.2 0 0);
+  --secondary: oklch(0.76 0.12 85);
+  --secondary-foreground: oklch(0.2 0 0);
+  --muted: oklch(0.32 0 0);
+  --muted-foreground: oklch(0.73 0 0);
+  --accent: oklch(0.32 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.36 0 0);
+  --input: oklch(0.38 0 0);
+  --ring: oklch(0.76 0.12 85);
+  --chart-1: oklch(0.76 0.12 85);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.265 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-primary: oklch(0.76 0.12 85);
+  --sidebar-primary-foreground: oklch(0.2 0 0);
+  --sidebar-accent: oklch(0.32 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --sidebar-border: oklch(0.36 0 0);
+  --sidebar-ring: oklch(0.76 0.12 85);
 }
 
 @theme inline {
@@ -167,8 +169,213 @@
 
 /* Background Pattern for Admin Login */
 .bg-grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(to right, currentColor 1px, transparent 1px),
     linear-gradient(to bottom, currentColor 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+/* ───────────────────────────────────────────────
+   Minimal aesthetic animation system
+   ─────────────────────────────────────────────── */
+
+/* Scroll reveal — elements fade & drift in once when they enter the viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-left {
+  transform: translateX(-32px);
+}
+.reveal-right {
+  transform: translateX(32px);
+}
+.reveal-none {
+  transform: none;
+}
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Landing (hero) entrance */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-hero-rise {
+  animation: hero-rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Navigation drop-in on first load */
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-nav-drop {
+  animation: nav-drop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slow cinematic drift on hero slide images */
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+.animate-ken-burns {
+  animation: ken-burns 8s ease-out both;
+}
+
+/* ─── Welcome intro (landing animation) ─── */
+
+/* Letters rise in with a soft blur-dissolve */
+@keyframes intro-letter-rise {
+  from {
+    transform: translateY(60%);
+    opacity: 0;
+    filter: blur(12px);
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+.animate-intro-letter {
+  animation: intro-letter-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+/* Whole lockup slowly settles from a gentle zoom — keeps the frame alive */
+@keyframes intro-zoom {
+  from {
+    transform: scale(0.92);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.animate-intro-zoom {
+  animation: intro-zoom 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform;
+}
+
+/* Ambient glow breathing behind the wordmark */
+@keyframes intro-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.18);
+  }
+}
+.animate-intro-glow {
+  animation: intro-glow 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Thin rule draws outward from the center */
+@keyframes intro-line-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+.animate-intro-line {
+  animation: intro-line-draw 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center;
+}
+
+/* Tagline fades up with a blur-dissolve */
+@keyframes intro-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.animate-intro-fade {
+  animation: intro-fade-up 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Content lifts away with a blur just before the curtain follows */
+@keyframes intro-content-exit {
+  to {
+    transform: translateY(-56px) scale(0.98);
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+.animate-intro-content-exit {
+  animation: intro-content-exit 0.8s cubic-bezier(0.65, 0, 0.35, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+/* Curtain panels lift away to reveal the site */
+@keyframes intro-lift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+.animate-intro-lift {
+  animation: intro-lift 1.15s cubic-bezier(0.87, 0, 0.13, 1) both;
+  will-change: transform;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-left,
+  .reveal-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-hero-rise,
+  .animate-nav-drop,
+  .animate-ken-burns,
+  .animate-intro-letter,
+  .animate-intro-zoom,
+  .animate-intro-glow,
+  .animate-intro-line,
+  .animate-intro-fade,
+  .animate-intro-content-exit,
+  .animate-intro-lift {
+    animation: none;
+  }
 }

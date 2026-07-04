@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
+import { Reveal } from '@/components/reveal';
 
 interface Testimonial {
   _id: string;
@@ -58,21 +59,22 @@ export function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-20 px-6">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Client Testimonials</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             Hear from our satisfied clients about their transformative architectural experiences.
           </p>
           <Link href="/submit-testimonial">
-            <Button variant="default">
+            <Button variant="default" className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
               Share Your Experience
             </Button>
           </Link>
-        </div>
+        </Reveal>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <Card key={testimonial._id} className="p-8 hover:shadow-lg transition-all">
+          {testimonials.map((testimonial, index) => (
+            <Reveal key={testimonial._id} delay={(index % 3) * 120}>
+            <Card className="p-8 h-full hover:shadow-xl hover:-translate-y-1 transition-all duration-500">
               <div className="flex gap-1 mb-4">
                 {renderStars(testimonial.rating)}
               </div>
@@ -83,6 +85,7 @@ export function TestimonialsSection() {
                 <p className="font-semibold">{testimonial.name}</p>
               </div>
             </Card>
+            </Reveal>
           ))}
         </div>
       </div>

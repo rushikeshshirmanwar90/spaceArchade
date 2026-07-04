@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   Sheet,
   SheetContent,
@@ -27,7 +28,7 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur animate-nav-drop">
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
         <div>
           <Image
@@ -35,13 +36,13 @@ export function Navigation() {
             width={500}
             src="/logo.png"
             alt="Space Archade Logo"
-            className="w-40"
+            className="w-40 brightness-0 dark:invert"
             priority
           />
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex gap-6">
+        <div className="hidden lg:flex gap-6 items-center">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -52,10 +53,12 @@ export function Navigation() {
               <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
+          <ThemeToggle />
         </div>
 
         {/* Mobile Navigation */}
-        <div className="lg:hidden flex items-center">
+        <div className="lg:hidden flex items-center gap-1">
+          <ThemeToggle />
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button
@@ -80,7 +83,7 @@ export function Navigation() {
                       width={500}
                       src="/logo.png"
                       alt="Space Archade Logo"
-                      className="w-36"
+                      className="w-36 brightness-0 dark:invert"
                       priority
                     />
                   </div>

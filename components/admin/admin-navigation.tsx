@@ -46,7 +46,7 @@ export function AdminNavigation() {
               width={500}
               src="/logo.png"
               alt="Space Archade Logo"
-              className="w-40"
+              className="w-40 brightness-0 dark:invert"
               priority
             />
           </div>
@@ -101,7 +101,7 @@ export function AdminNavigation() {
                           width={500}
                           src="/logo.png"
                           alt="Space Archade Logo"
-                          className="w-36"
+                          className="w-36 brightness-0 dark:invert"
                           priority
                         />
                       </div>

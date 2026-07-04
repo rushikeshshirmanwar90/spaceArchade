@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { Reveal } from '@/components/reveal';
 
 interface ProcessStep {
   _id: string;
@@ -46,27 +47,27 @@ export function ProcessSection() {
   return (
     <section id="process" className="py-20 px-6 bg-muted/20">
       <div className="mx-auto max-w-7xl">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Our Design Process</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             A systematic approach to creating exceptional architectural solutions tailored to your vision.
           </p>
-        </div>
+        </Reveal>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {processSteps.map((step) => (
-            <div key={step._id} className="flex flex-col">
+          {processSteps.map((step, index) => (
+            <Reveal key={step._id} delay={index * 150} className="flex flex-col group">
               <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
                 <Image
                   src={step.image}
                   alt={step.title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold transition-transform duration-300 group-hover:scale-110">
                     {step.step}
                   </div>
                   <h3 className="text-xl font-semibold">{step.title}</h3>
@@ -75,7 +76,7 @@ export function ProcessSection() {
                   {step.description}
                 </p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
