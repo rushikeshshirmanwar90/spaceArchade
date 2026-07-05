@@ -20,7 +20,7 @@ const DEFAULT_ABOUT = {
   feature1Desc: 'Sustainable materials and passive lighting structures at our core.',
   feature2Title: 'Timeless Detail',
   feature2Desc: 'Exquisite craftsmanship blending structural boldness with micro-refinement.',
-  image: '/about-us.png',
+  image: '/logo.png',
 };
 
 export function AboutSection() {
@@ -52,16 +52,15 @@ export function AboutSection() {
 
           {/* Left Column: Premium Interactive Images */}
           <Reveal direction="left" className="lg:col-span-6 relative">
-            <div className="relative aspect-square w-full max-w-[540px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border group">
+            <div className="relative aspect-square w-full max-w-[540px] mx-auto rounded-2xl overflow-hidden shadow-2xl border border-border group bg-white flex items-center justify-center p-10 md:p-16">
               <Image
-                src={about.image}
-                alt="Contemporary architecture render of modern concrete villa"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                src="/logo.png"
+                alt="Space Archade logo"
+                width={502}
+                height={327}
+                className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-40" />
             </div>
 
             {/* Overlapping Glassmorphism Badge */}

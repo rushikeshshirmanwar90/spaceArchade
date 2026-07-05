@@ -42,7 +42,7 @@ export function CollectionSection() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Our Collection</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Explore our curated collection of architectural masterpieces and design inspirations.
           </p>
         </div>

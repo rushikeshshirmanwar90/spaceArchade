@@ -49,7 +49,7 @@ export function ProcessSection() {
       <div className="mx-auto max-w-7xl">
         <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Our Design Process</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             A systematic approach to creating exceptional architectural solutions tailored to your vision.
           </p>
         </Reveal>

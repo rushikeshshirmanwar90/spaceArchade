@@ -49,7 +49,7 @@ export function ProjectsSection() {
       <div className="mx-auto max-w-7xl">
         <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Design Showcases</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover our portfolio of award-winning projects spanning residential, commercial, and hospitality sectors.
           </p>
         </Reveal>

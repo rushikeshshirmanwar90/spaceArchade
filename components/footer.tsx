@@ -62,7 +62,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <div className="relative h-10 w-40 mb-4">
+            <div className="relative h-25 w-40 mb-4">
               <Image src="/logo.png" alt="Space Archade Logo" fill className="object-contain object-left brightness-0 dark:invert" />
             </div>
             <p className="text-sm text-muted-foreground">{footer.brandDescription}</p>

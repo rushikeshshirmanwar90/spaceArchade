@@ -36,7 +36,7 @@ export function CTASection() {
     <section className="py-20 px-6">
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-4xl font-bold mb-6">{cta.title}</h2>
-        <p className="text-lg text-muted-foreground mb-8">{cta.description}</p>
+        <p className="text-xl text-muted-foreground mb-8">{cta.description}</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href={cta.primaryHref}>
             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

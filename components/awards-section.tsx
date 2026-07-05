@@ -6,7 +6,7 @@ export function AwardsSection() {
       <div className="mx-auto max-w-7xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Awards & Recognition</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Industry-leading recognition for architectural excellence and innovative design.
           </p>
         </div>

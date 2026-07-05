@@ -19,8 +19,12 @@ const DEFAULT_CONTACT = {
   whatsappNumber: '919579896842',
 };
 
+const GOOGLE_FORM_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfeV41REMsMRhheHe--kdWRp1u-ufHdj8uXJxtCNMdQkQcgOA/viewform?embedded=true';
+
 export function ContactForm() {
   const [contact, setContact] = useState(DEFAULT_CONTACT);
+  const [activeTab, setActiveTab] = useState<'quick' | 'detailed'>('quick');
 
   useEffect(() => {
     async function fetchContact() {
@@ -42,10 +46,51 @@ export function ContactForm() {
       <div className="mx-auto max-w-3xl">
         <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">{contact.title}</h2>
-          <p className="text-lg text-muted-foreground">{contact.description}</p>
+          <p className="text-xl text-muted-foreground">{contact.description}</p>
         </Reveal>
 
         <Reveal delay={100}>
+        <div className="flex justify-center gap-2 mb-8">
+          <Button
+            type="button"
+            variant={activeTab === 'quick' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('quick')}
+            className="transition-all duration-300"
+          >
+            Quick Enquiry
+          </Button>
+          <Button
+            type="button"
+            variant={activeTab === 'detailed' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('detailed')}
+            className="transition-all duration-300"
+          >
+            Detailed Enquiry Form
+          </Button>
+        </div>
+
+        {activeTab === 'detailed' ? (
+          <Card className="p-2 sm:p-4 overflow-hidden">
+            <iframe
+              src={GOOGLE_FORM_URL}
+              title="Enquiry Form"
+              className="w-full h-[1200px] rounded-lg border-0"
+            >
+              Loading…
+            </iframe>
+            <p className="text-center text-sm text-muted-foreground py-2">
+              Having trouble viewing the form?{' '}
+              <a
+                href={GOOGLE_FORM_URL.replace('?embedded=true', '')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors"
+              >
+                Open it in a new tab
+              </a>
+            </p>
+          </Card>
+        ) : (
         <Card className="p-8">
           <form
             onSubmit={(e) => {
@@ -124,6 +169,7 @@ export function ContactForm() {
             </Button>
           </form>
         </Card>
+        )}
         </Reveal>
       </div>
     </section>

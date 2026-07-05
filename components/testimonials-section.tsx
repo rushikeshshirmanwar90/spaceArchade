@@ -61,7 +61,7 @@ export function TestimonialsSection() {
       <div className="mx-auto max-w-7xl">
         <Reveal className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Client Testimonials</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Hear from our satisfied clients about their transformative architectural experiences.
           </p>
           <Link href="/submit-testimonial">
