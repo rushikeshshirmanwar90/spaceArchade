@@ -9,6 +9,10 @@ const DEFAULT_FOOTER = {
   email: 'hello@spacearchade.com',
   phone: '+1 (555) 123-4567',
   location: 'San Francisco, CA',
+  offices: [
+    { id: 1, name: 'Betul Office', address: 'Balaji Traders, Main Road Padhar, Betul - 460001' },
+    { id: 2, name: 'Indore Office', address: '58, Saket Nagar, Indore - 452001' },
+  ],
   copyright: '© 2024 Space Archade. All rights reserved.',
   companyLinks: [
     { id: 1, label: 'About', href: '#' },
@@ -89,6 +93,12 @@ export function Footer() {
               <li>{footer.email}</li>
               <li>{footer.phone}</li>
               <li>{footer.location}</li>
+              {footer.offices.map((office: any, index: number) => (
+                <li key={office.id || index} className="pt-2">
+                  <p className="font-medium text-foreground">{office.name}</p>
+                  <p>{office.address}</p>
+                </li>
+              ))}
             </ul>
           </div>
 
