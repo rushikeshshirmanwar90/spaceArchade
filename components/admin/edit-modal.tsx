@@ -14,9 +14,10 @@ interface EditModalProps {
   item: any;
   onClose: () => void;
   onSave: (item: any) => void;
+  categories?: { name: string }[];
 }
 
-export function EditModal({ item, onClose, onSave }: EditModalProps) {
+export function EditModal({ item, onClose, onSave, categories = [] }: EditModalProps) {
   const [editedItem, setEditedItem] = useState(item);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -91,6 +92,33 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
     }
   };
 
+  // Render category dropdown (existing categories + no-category option)
+  const renderCategorySelect = () => {
+    const names = categories.map((c) => c.name).filter(Boolean);
+    // Keep a legacy/unknown category selectable so it isn't silently lost
+    if (editedItem.category && !names.includes(editedItem.category)) {
+      names.unshift(editedItem.category);
+    }
+
+    return (
+      <div>
+        <Label>Category (optional)</Label>
+        <select
+          value={editedItem.category || ''}
+          onChange={(e) => setEditedItem({ ...editedItem, category: e.target.value })}
+          className="mt-1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] md:text-sm dark:bg-input/30"
+        >
+          <option value="">No category</option>
+          {names.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
+
   // Render image upload field
   const renderImageUpload = (key: string) => {
     return (
@@ -144,7 +172,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                   Click to upload image
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  PNG, JPG, WEBP up to 10MB
+                  PNG, JPG, WEBP — large images are compressed automatically
                 </p>
               </div>
               <input
@@ -207,7 +235,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                 Click to upload images
               </p>
               <p className="text-xs text-muted-foreground">
-                PNG, JPG, WEBP up to 10MB
+                PNG, JPG, WEBP — large images are compressed automatically
               </p>
             </div>
             <input
@@ -1266,7 +1294,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                       Click to upload photo
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      PNG, JPG, WEBP up to 10MB
+                      PNG, JPG, WEBP — large images are compressed automatically
                     </p>
                   </div>
                   <input
@@ -1435,7 +1463,7 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                       Click to upload photo
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      PNG, JPG, WEBP up to 10MB
+                      PNG, JPG, WEBP — large images are compressed automatically
                     </p>
                   </div>
                   <input
@@ -1771,36 +1799,29 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
 
           <div className="p-6 space-y-6">
             <div>
-              <Label>Title</Label>
+              <Label>Title (optional)</Label>
               <Input
                 value={editedItem.title}
                 onChange={(e) => setEditedItem({ ...editedItem, title: e.target.value })}
-                placeholder="Project title"
+                placeholder="Project title (optional)"
               />
             </div>
             <div>
-              <Label>Location</Label>
+              <Label>Location (optional)</Label>
               <Input
                 value={editedItem.location}
                 onChange={(e) => setEditedItem({ ...editedItem, location: e.target.value })}
-                placeholder="Project location"
+                placeholder="Project location (optional)"
               />
             </div>
+            {renderCategorySelect()}
             <div>
-              <Label>Category</Label>
-              <Input
-                value={editedItem.category}
-                onChange={(e) => setEditedItem({ ...editedItem, category: e.target.value })}
-                placeholder="Category"
-              />
-            </div>
-            <div>
-              <Label>Description</Label>
+              <Label>Description (optional)</Label>
               <Textarea
                 value={editedItem.description}
                 onChange={(e) => setEditedItem({ ...editedItem, description: e.target.value })}
                 rows={4}
-                placeholder="Project description"
+                placeholder="Project description (optional)"
               />
             </div>
             {renderMultiImageUpload('images')}
@@ -1810,7 +1831,18 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
             <Button variant="outline" onClick={onClose} className="flex-1" disabled={isSaving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="flex-1 bg-primary" disabled={isSaving || isLoading}>
+            <Button
+              onClick={handleSave}
+              className="flex-1 bg-primary"
+              disabled={
+                isSaving ||
+                isLoading ||
+                (!editedItem.images?.length &&
+                  !editedItem.title &&
+                  !editedItem.location &&
+                  !editedItem.description)
+              }
+            >
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -1859,6 +1891,8 @@ export function EditModal({ item, onClose, onSave }: EditModalProps) {
                   renderImageUpload(key)
                 ) : key === 'images' ? (
                   renderMultiImageUpload(key)
+                ) : key === 'category' && item.type === 'project' ? (
+                  renderCategorySelect()
                 ) : key === 'description' || key === 'bio' || key === 'message' ? (
                   <div>
                     <Label className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</Label>

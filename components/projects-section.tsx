@@ -42,7 +42,7 @@ export function ProjectsSection() {
     ? projects.filter((p) => p.category === selectedCategory)
     : projects;
 
-  const categories = Array.from(new Set(projects.map((p) => p.category)));
+  const categories = Array.from(new Set(projects.map((p) => p.category).filter(Boolean)));
 
   return (
     <section id="projects" className="py-20 px-6">
@@ -92,17 +92,25 @@ export function ProjectsSection() {
               return (
                 <Reveal key={project._id} delay={(index % 3) * 120}>
                   <Card className="overflow-hidden group cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-500 h-full">
-                    <ProjectImageSwiper images={imgs} alt={project.title} />
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                          {project.category}
-                        </span>
-                        <span className="text-xs text-muted-foreground">{project.location}</span>
+                    <ProjectImageSwiper images={imgs} alt={project.title || 'Project image'} />
+                    {(project.category || project.location || project.title || project.description) && (
+                      <div className="p-6">
+                        {(project.category || project.location) && (
+                          <div className="flex items-center justify-between mb-3">
+                            {project.category && (
+                              <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                                {project.category}
+                              </span>
+                            )}
+                            {project.location && (
+                              <span className="text-xs text-muted-foreground ml-auto">{project.location}</span>
+                            )}
+                          </div>
+                        )}
+                        {project.title && <h3 className="text-xl font-semibold mb-2">{project.title}</h3>}
+                        {project.description && <p className="text-muted-foreground text-sm">{project.description}</p>}
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                      <p className="text-muted-foreground text-sm">{project.description}</p>
-                    </div>
+                    )}
                   </Card>
                 </Reveal>
               );

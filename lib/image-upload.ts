@@ -1,3 +1,36 @@
+// Cloudinary rejects files over 10MB on the current plan
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+const MAX_EDGE_PX = 2560;
+
+// Downscale/re-encode an image in the browser until it fits under the upload limit
+const compressImage = async (file: File): Promise<Blob> => {
+  if (!file.type.startsWith('image/') || file.size <= MAX_UPLOAD_BYTES) return file;
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_EDGE_PX / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return file;
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const toBlob = (type: string, quality: number) =>
+    new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
+
+  let result: Blob = file;
+  for (const quality of [0.9, 0.8, 0.7, 0.6, 0.5]) {
+    // Prefer WebP (keeps transparency); Safari falls back to JPEG
+    let blob = await toBlob('image/webp', quality);
+    if (!blob || blob.type !== 'image/webp') blob = await toBlob('image/jpeg', quality);
+    if (!blob) break;
+    result = blob;
+    if (blob.size <= MAX_UPLOAD_BYTES) break;
+  }
+  return result;
+};
+
 // Upload single or multiple images to Cloudinary
 export const handleImageUpload = async (
   e: React.ChangeEvent<HTMLInputElement>,
@@ -10,13 +43,14 @@ export const handleImageUpload = async (
 
   try {
     const uploadPromises = Array.from(e.target.files).map(async (file) => {
+      const upload = await compressImage(file);
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'realEstate');
+      formData.append('file', upload, file.name);
+      formData.append('upload_preset', 'website');
 
       try {
         const response = await fetch(
-          `https://api.cloudinary.com/v1_1/do6v48jbp/image/upload`,
+          `https://api.cloudinary.com/v1_1/rbpepl7c/image/upload`,
           {
             method: 'POST',
             body: formData,
@@ -39,14 +73,14 @@ export const handleImageUpload = async (
     });
 
     const urls = (await Promise.all(uploadPromises)).filter(Boolean) as string[];
-    
+
     if (urls.length === 0) {
       throw new Error('No images were uploaded successfully');
     }
 
     // Call the setImages callback with the new URLs
     setImages(urls);
-    
+
     setIsLoading(false);
     return urls;
   } catch (error) {
@@ -68,12 +102,13 @@ export const handleSingleImageUpload = async (
 
   try {
     const file = e.target.files[0];
+    const upload = await compressImage(file);
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'realEstate');
+    formData.append('file', upload, file.name);
+    formData.append('upload_preset', 'website');
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/do6v48jbp/image/upload`,
+      `https://api.cloudinary.com/v1_1/rbpepl7c/image/upload`,
       {
         method: 'POST',
         body: formData,
@@ -88,10 +123,10 @@ export const handleSingleImageUpload = async (
 
     const data = await response.json();
     const url = data.secure_url;
-    
+
     console.log('Image uploaded successfully:', url);
     onSuccess(url);
-    
+
     setIsLoading(false);
     return url;
   } catch (error) {

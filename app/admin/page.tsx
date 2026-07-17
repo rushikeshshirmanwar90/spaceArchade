@@ -150,20 +150,20 @@ function getStoredAuth(): boolean {
     const expiry = localStorage.getItem(AUTH_KEY);
     if (expiry && Date.now() < Number(expiry)) return true;
     localStorage.removeItem(AUTH_KEY);
-  } catch {}
+  } catch { }
   return false;
 }
 
 function storeAuth() {
   try {
     localStorage.setItem(AUTH_KEY, String(Date.now() + ONE_WEEK_MS));
-  } catch {}
+  } catch { }
 }
 
 function clearAuth() {
   try {
     localStorage.removeItem(AUTH_KEY);
-  } catch {}
+  } catch { }
 }
 
 export default function AdminPage() {
@@ -601,26 +601,26 @@ export default function AdminPage() {
             <span className="text-sm font-medium">{isEditMode ? 'Edit Mode' : 'Preview Mode'}</span>
           </div>
           <div className="flex items-center gap-3">
-          <Button
-            onClick={() => { clearAuth(); setIsAuthenticated(false); }}
-            variant="ghost"
-            className="text-white hover:bg-red-600 hover:text-white border border-white/20"
-          >
-            Logout
-          </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
-            {isSaving ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Refreshing...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4 mr-2" />
-                Refresh Data
-              </>
-            )}
-          </Button>
+            <Button
+              onClick={() => { clearAuth(); setIsAuthenticated(false); }}
+              variant="ghost"
+              className="text-white hover:bg-red-600 hover:text-white border border-white/20"
+            >
+              Logout
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Refreshing...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Refresh Data
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
@@ -644,6 +644,7 @@ export default function AdminPage() {
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
             onSave={handleOnSave}
+            categories={data.categories}
           />
         )}
       </div>

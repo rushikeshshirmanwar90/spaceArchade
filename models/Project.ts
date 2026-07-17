@@ -2,12 +2,12 @@ import mongoose, { Schema, models } from 'mongoose';
 
 const projectSchema = new Schema(
   {
-    title: { type: String, required: true },
-    location: { type: String, required: true },
-    category: { type: String, required: true },
+    title: { type: String, default: '' },
+    location: { type: String, default: '' },
+    category: { type: String, default: '' },
     image: { type: String, default: '' },
     images: { type: [String], default: [] },
-    description: { type: String, required: true },
+    description: { type: String, default: '' },
   },
   { timestamps: true }
 );

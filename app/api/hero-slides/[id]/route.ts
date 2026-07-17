@@ -8,11 +8,11 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     const params = await context.params;
     const body = await request.json();
     const slide = await HeroSlide.findByIdAndUpdate(params.id, body, { new: true });
-    
+
     if (!slide) {
       return NextResponse.json({ success: false, error: 'Hero slide not found' }, { status: 404 });
     }
-    
+
     return NextResponse.json({ success: true, data: slide });
   } catch (error) {
     console.error('Error updating hero slide:', error);
@@ -25,11 +25,11 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     await connect();
     const params = await context.params;
     const slide = await HeroSlide.findByIdAndDelete(params.id);
-    
+
     if (!slide) {
       return NextResponse.json({ success: false, error: 'Hero slide not found' }, { status: 404 });
     }
-    
+
     return NextResponse.json({ success: true, data: slide });
   } catch (error) {
     console.error('Error deleting hero slide:', error);
@@ -42,11 +42,11 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     await connect();
     const params = await context.params;
     const slide = await HeroSlide.findById(params.id);
-    
+
     if (!slide) {
       return NextResponse.json({ success: false, error: 'Hero slide not found' }, { status: 404 });
     }
-    
+
     return NextResponse.json({ success: true, data: slide });
   } catch (error) {
     console.error('Error fetching hero slide:', error);
